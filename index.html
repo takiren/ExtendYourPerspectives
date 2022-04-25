@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="index.js"></script>
+  <script src="https://unpkg.com/three@0.137.4/build/three.min.js"></script>
+</head>
+<style>
+  body {
+    color: white;
+    padding: 0 16px;
+  }
+
+  /* tabs */
+  .sp-tabs {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 2px solid #3E3E3E;
+  }
+
+  .sp-tab {
+    margin-right: 12px;
+  }
+
+  .sp-tab sp-label {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: large;
+  }
+
+  .sp-tab:hover sp-label {
+    color: white;
+  }
+
+  .sp-tab.selected {
+    border-bottom: 2px solid white;
+    margin-bottom: -2px;
+  }
+
+  .sp-tab.selected sp-label {
+    color: white;
+  }
+
+  @media (prefers-color-scheme: light),
+  (prefers-color-scheme: lightest) {
+    .sp-tabs {
+      border-bottom: 2px solid #B8B8B8;
+      font-size: 200%;
+    }
+
+    .sp-tab sp-label {
+      color: rgba(0, 0, 0, 0.66);
+    }
+
+    .sp-tab:hover sp-label {
+      color: black;
+    }
+
+    .sp-tab.selected {
+      border-bottom: 2px solid black;
+    }
+
+    .sp-tab.selected sp-label {
+      color: black;
+    }
+  }
+
+  .sp-tab-page {
+    display: none;
+    flex: 1 1 auto;
+    overflow: scroll;
+    padding: 12px 0;
+    flex-direction: column;
+  }
+
+  .sp-tab-page.visible {
+    display: flex;
+
+  }
+
+  .sp-tab-page>* {
+    flex: 0 0 auto;
+  }
+
+  /* groups */
+  .group {
+    flex: 0 0 auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    padding: 24px 12px 12px 12px;
+    position: relative;
+    margin-top: 1em;
+    margin-bottom: 12px;
+    size: large;
+  }
+
+  #sp-native-tab-page .group {
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    size: medium;
+  }
+
+  .group>sp-label:not(.safe) {
+    position: absolute;
+    top: -1em;
+    left: 0px;
+    background-color: #3E3E3E;
+    display: block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 1em;
+  }
+
+  @media (prefers-color-scheme: light),
+  (prefers-color-scheme: lightest) {
+    .group {
+      background-color: rgba(0, 0, 0, 0.0625);
+    }
+
+    .group>sp-label:not(.safe) {
+      background-color: #E8E8E8;
+    }
+  }
+
+  .group> :not(sp-label) {
+    margin: 6px;
+  }
+
+  .wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    flex-direction: column;
+    display: flex;
+    padding: 12px;
+    font-size: medium;
+  }
+
+  .group>sp-menu {
+    border: solid;
+    border-width: 2px;
+    border-color: #E8E8E8;
+    border-radius: 3mm;
+  }
+
+  :not(sp-picker)>sp-menu {
+    border: solid;
+    border-width: 2px;
+    border-radius: 2mm;
+    border-color: #B8B8B8;
+  }
+
+  sp-textfield {
+    size: small;
+  }
+</style>
+
+<body>
+  <div class="wrapper">
+    <div class="sp-tabs">
+      <div class="sp-tab selected" id="home">
+        <sp-label>ホーム</sp-label>
+      </div>
+      <div class="sp-tab" id="world">
+        <sp-label>ワールド</sp-label>
+      </div>
+      <div class="sp-tab" id="primitives">
+        <sp-label>プリミティブ</sp-label>
+      </div>
+    </div>
+    
+    <div class="sp-tab-page visible" id="home-tab-page">
+      <div class="group">
+        <sp-label>基準</sp-label>
+        <sp-detal>基準線</sp-detal>
+        <sp-picker id="pickerNormalLength">
+          <sp-menu slot="options" id="menuNormalLength">
+          </sp-menu>
+        </sp-picker>
+        <sp-button id="updateNormal" variant="primary">更新</sp-button>
+        <sp-label class="safe" id="textNormal"></sp-label>
+      </div>
+      <div class="group">
+        <sp-label>カメラ設定</sp-label>
+
+        <div>
+          <sp-textfield value="-3.0" type="number" id="cameraPosX">
+            <sp-label slot="label">カメラのX座標</sp-label>
+          </sp-textfield>
+          <sp-textfield value="1.5" type="number" id="cameraPosY">
+            <sp-label slot="label">カメラのY座標</sp-label>
+          </sp-textfield>
+          <sp-textfield value="-3.0" type="number" id="cameraPosZ">
+            <sp-label slot="label">カメラのZ座標</sp-label>
+          </sp-textfield>
+        </div>
+        <div>
+          <sp-textfield value="10.0" type="number" id="cameraTargetX">
+            <sp-label slot="label">注視点X</sp-label>
+          </sp-textfield>
+          <sp-textfield value="1.5" type="number" id="cameraTargetY">
+            <sp-label slot="label">注視点Y</sp-label>
+          </sp-textfield>
+          <sp-textfield value="10.0" type="number" id="cameraTargetZ">
+            <sp-label slot="label">注視点Z</sp-label>
+          </sp-textfield>
+        </div>
+        <div>
+          <sp-textfield value="0.0" type="number" id="cameraRotZ">
+            <sp-label slot="label">カメラの傾き</sp-label>
+          </sp-textfield>
+          <sp-textfield value="90.0" type="number" id="cameraFOV">
+            <sp-label slot="label">カメラの画角(水平視野角)</sp-label>
+          </sp-textfield>
+        </div>
+        <div>
+          <sp-field-group id="groupCamera">
+            <sp-field-label for="textCameraPath">カメラパス</sp-field-label>
+            <sp-picker id="pickerCamerapath" placeholder="選択してください" size="m">
+              <sp-menu slot="options" id="menuCameraPath">
+
+              </sp-menu>
+            </sp-picker>
+
+            <sp-button id="btnUpdateCameraPath" variant="primary">
+              パスの一覧更新
+            </sp-button>
+            <sp-button id="calcCamera">カメラ座標逆算</sp-button>
+
+          </sp-field-group>
+        </div>
+
+      </div>
+      <div class="group" id="perseSettings">
+        <sp-label>パースライン設定</sp-label>
+        <sp-field-group>
+          <sp-textfield value="5" type="number" id="perseLineNumX">
+            <sp-label slot="label">パースラインの数X</sp-label>
+          </sp-textfield>
+          <sp-textfield value="0" type="number" id="perseLineNumY">
+            <sp-label slot="label">パースラインの数Y</sp-label>
+          </sp-textfield>
+          <sp-textfield value="5" type="number" id="perseLineNumZ">
+            <sp-label slot="label">パースラインの数Z</sp-label>
+          </sp-textfield>
+          <sp-button id="btnGo">Go</sp-button>
+          <sp-button id="btnReset" variant="primary">Reset</sp-button>
+        </sp-field-group>
+      </div>
+    </div>
+    <div class="sp-tab-page" id="world-tab-page">
+      <div class="group">
+        <sp-label>world</sp-label>
+        <sp-detail>パス一覧</sp-detail>
+        <sp-menu id="menuTargets" slot="options" selects="multiple">
+        </sp-menu>
+        <sp-detail>変形対象</sp-detail>
+        <sp-menu id="menuCandidate">
+        </sp-menu>
+      </div>
+      <sp-button id="updateTargetPaths">対象の更新</sp-button>
+    </div>
+    <div class="sp-tab-page" id="primitives-tab-page">
+      <div class="group">
+        <sp-field-group horizontal>
+          <sp-label>プリミティブ</sp-label>
+          <sp-menu id="menuPrimitives">
+            <sp-menu-item>平面</sp-menu-item>
+            <sp-menu-item>箱</sp-menu-item>
+            <sp-menu-item>球</sp-menu-item>
+            <sp-menu-item>円</sp-menu-item>
+          </sp-menu>
+          <sp-textfield>
+            <sp-label slot="label">X座標</sp-label>
+          </sp-textfield>
+          <sp-textfield>
+            <sp-label slot="label">Y座標</sp-label>
+          </sp-textfield>
+          <sp-textfield>
+            <sp-label slot="label">Z座標</sp-label>
+          </sp-textfield>
+        </sp-field-group>
+        <sp-button id="btnGeneratePrimitives">生成</sp-button>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+</body>
+
+</html>

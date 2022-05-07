@@ -2,6 +2,8 @@
 const { Matrix } = require("./Matrix");
 const { entrypoints } = require("uxp");
 const { Camera } = require("./Camera");
+const { Poly } = require("./Poly");
+const { MultiPoly } = require("./MultiPoly");
 Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
   theTab.onclick = () => {
     localStorage.setItem("currentTab", theTab.getAttribute("id"));
@@ -90,7 +92,7 @@ function calc_z_c_min() {
 }
 
 class World {
-  constructor() {
+  constructor(CameraInstance) {
     this.multiPolys = [];
     const c_pos = [
       Number(document.getElementById("cameraPosX").value),
@@ -106,7 +108,7 @@ class World {
     console.table(c_pos)
     console.table(t_pos)
     calc_z_c_min();
-    this.instanceCam = new Camera(c_pos, t_pos, window_distance, window_v_size, window_h_size, z_max, z_c_min, z_min, canvas_width, canvas_height);
+    this.instanceCam = CameraInstance;
     console.log("World Initialized")
     this.PersepectivePolys = [];
   }
@@ -155,10 +157,10 @@ class World {
         1
       ];
       this.PersepectivePolys.push(Poly.createLine(vert1, vert2))
-
     }
     console.log("パースライン", this.PersepectivePolys)
   }
+
 
   async drawPerse(executionControl) {
     const spis = []
@@ -194,93 +196,12 @@ class World {
     await lines.remove();
   }
 
-  createPerseX(index) {
+}
 
-  }
-
-  static async drawAll() {
-
-  }
+class Renderer{
 
 }
 
-class MultiPoly {
-  constructor() {
-    this.polys = []
-  }
-  addPoly(poly) {
-    this.polys.push(poly)
-  }
-
-  static createMultiPolyFromPath(pathItem) {
-    const mp = new MultiPoly()
-    for (let index = 0; index < pathItem.subPathItems.length; index++) {
-      const p = new Poly();
-      const subPaths = pathItem.subPathItems[index];
-      for (let indexj = 0; indexj < subPaths.pathPoints.length; indexj++) {
-        const point = subPaths.pathPoints[indexj];
-        const vert = new Matrix(4, 1);
-        vert.elements = [
-          point.anchor[0],
-          0,
-          point.anchor[1],
-          1
-        ]
-        p.addVert(vert)
-      }
-      console.log(p)
-      mp.addPoly(p)
-    }
-    console.log(mp)
-    return mp;
-  }
-}
-
-class Poly {
-  constructor() {
-    this.origin = new Matrix(4, 1);
-    this.verts = [];
-  }
-
-  addVert(vec) {
-    this.verts.push(vec)
-  }
-
-  static createLine(v1, v2) {
-    const p = new Poly();
-    p.addVert(v1)
-    p.addVert(v2)
-    return p;
-  }
-
-  static createPoly(...args) {
-    for (const key in arguments) {
-      if (Object.hasOwnProperty.call(arguments, key)) {
-        const element = arguments[key];
-        this.verts.push(element)
-      }
-    }
-  }
-
-  static addPerspectives() {
-
-  }
-
-  static createPolyFromPath(pathItem) {
-    for (const key in pathItem) {
-      if (Object.hasOwnProperty.call(pathItem, key)) {
-        const element = pathItem[key];
-        console.log(element)
-      }
-    }
-  }
-}
-
-
-class PerspectiveLine {
-  constructor() {
-  }
-}
 
 class Draw {
   constructor() {
@@ -556,7 +477,7 @@ async function dFunc(executionControl) {
     "documentID": documentID,
     "name": "パース描画"
   });
-  wld = new World();
+  wld = new World(new Camera(c_pos, t_pos, window_distance, window_v_size, window_h_size, z_max, z_c_min, z_min, canvas_width, canvas_height));
   console.log("TestLog")
   wld.createPerse();
   await wld.drawPerse();

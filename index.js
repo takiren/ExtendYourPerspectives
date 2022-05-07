@@ -1,3 +1,4 @@
+
 const { Matrix } = require("./Matrix");
 Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
   theTab.onclick = () => {
@@ -39,6 +40,8 @@ let window_h_size;
 let cameraPos = [0, 0, 0];
 let cameraTargetPos = [0, 0, 0];
 
+let normalLength;
+
 function Init() {
   if (!app) {
     // 初期化処理．
@@ -58,6 +61,7 @@ function Init() {
   window_distance = 1;
   InitCanvas();
   console.log("Initialized Success.");
+  normalLength = document.getElementById("inputNormal")
   return true;
 }
 
@@ -71,6 +75,7 @@ function InitCanvas() {
   vertical_rads = horizonta_rads * canvas_height / canvas_width;
   window_v_size = window_distance * Math.tan(vertical_rads);
   window_h_size = window_distance * Math.tan(horizonta_rads);
+  calc_z_c_min();
   return;
 }
 
@@ -82,67 +87,34 @@ function calc_z_c_min() {
   return z_c_min;
 }
 
-//これいらないかも．
-class Vector4 {
-  constructor(x, y, z, w) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.w = w;
-    this.screen_x_pos = 0;
-    this.screen_y_pos = 0;
-  }
-  getIndex(index) {
-    switch (index) {
-      case 0:
-        return this.x;
-      case 1:
-        return this.y;
-      case 2:
-        return this.z;
-      case 3:
-        return this.w;
-    }
-  }
-  setByIndex(index, value) {
-    switch (index) {
-      case 0:
-        this.x = value;
-        return;
-      case 1:
-        this.x = value;
-        return;
-      case 2:
-        this.x = value;
-        return;
-      case 3:
-        this.x = value;
-        return;
-    }
-  }
-}
-
 class Camera {
-  constructor() {
-    this.reset();
-    this.init();
-  }
-
-  init() {
+  constructor(CameraPos, TargetPos, w_dis, wvsize, whsize, z_m, zchilda, zmi, c_width, c_height) {
     this.location = new Matrix(3, 1);
     this.location.elements = [
-      cameraPos[0],
-      cameraPos[1],
-      cameraPos[2]
-    ];
+      CameraPos[0],
+      CameraPos[1],
+      CameraPos[2]
+    ]
+
     console.log("カメラ座標", this.location);
     this.targetLoc = new Matrix(3, 1);
     this.targetLoc.elements = [
-      cameraTargetPos[0],
-      cameraTargetPos[1],
-      cameraTargetPos[2]
-    ];
+      TargetPos[0],
+      TargetPos[1],
+      TargetPos[2]
+    ]
+
+    this.canv_width = c_width
+    this.canv_height = c_height
+
     this.axis = [new Matrix(3, 1), new Matrix(3, 1), new Matrix(3, 1)];
+
+    this.w_distance = w_dis;
+    this.w_hSize = whsize;
+    this.w_vSize = wvsize;
+    this.zMax = z_m;
+    this.z_dash_min = zchilda;
+    this.zMin = zmi;
 
     this.calcAxis();
     this.mn = this.makeNormalize();
@@ -150,18 +122,6 @@ class Camera {
     this.mp = this.makeProjection();
     this.mx_ViewToScr = this.makeViewToScr();
     this.scaleI = Matrix.makeScale(1, 1, 1);
-  }
-
-  reset() {
-    cameraPos[0] = Number(document.getElementById("cameraPosX").value);
-    cameraPos[1] = Number(document.getElementById("cameraPosY").value);
-    cameraPos[2] = Number(document.getElementById("cameraPosZ").value);
-
-    cameraTargetPos[0] = Number(document.getElementById("cameraTargetX").value);
-    cameraTargetPos[1] = Number(document.getElementById("cameraTargetY").value);
-    cameraTargetPos[2] = Number(document.getElementById("cameraTargetZ").value);
-
-    console.table(cameraPos);
   }
 
   calcTargetVec() {
@@ -202,19 +162,19 @@ class Camera {
   }
 
   makeViewToScr() {
-    var mx = new Matrix(4, 4);
+    let mx = new Matrix(4, 4);
     mx.elements = [
-      canvas_width / 2, 0, 0, canvas_width / 2,
-      0, canvas_height / 2, 0, canvas_height / 2,
+      this.canv_width / 2, 0, 0, this.canv_width / 2,
+      0, this.canv_height / 2, 0, this.canv_height / 2,
       0, 0, 1, 0,
       0, 0, 0, 1
     ];
-
+    console.table("ターブル", mx)
     return mx;
   }
 
   makeNormalize() {
-    return Matrix.makeScale(window_distance / (z_max * window_h_size), window_distance / (window_v_size * z_max), 1 / z_max);
+    return Matrix.makeScale(this.w_distance / (this.zMax * this.w_hSize), this.w_distance / (this.w_vSize * this.zMax), 1 / this.zMax);
   }
 
   makeProjection() {
@@ -223,7 +183,7 @@ class Camera {
     mx_P.elements = [
       1, 0, 0, 0,
       0, 1, 0, 0,
-      0, 0, 1 / (1 - z_c_min), -z_c_min / (1 - z_c_min),
+      0, 0, 1 / (1 - this.z_dash_min), -this.z_dash_min / (1 - this.z_dash_min),
       0, 0, 1, 0
     ];
     return mx_P;
@@ -231,7 +191,6 @@ class Camera {
 
   Project(vert) {
     vert = Matrix.multiply(this.scaleI, vert);
-    console.table(Matrix.log(this.mt));
     vert = Matrix.multiply(this.mt, vert);
     vert = Matrix.multiply(this.mn, vert);
     vert = Matrix.multiply(this.mp, vert);
@@ -241,36 +200,37 @@ class Camera {
 
   ProjectToScreen(vert) {
     vert = this.Project(vert);
+    console.log("スクリーン座標変換", this.mx_ViewToScr)
+    console.log("変換テスト", Matrix.multiply(this.mx_ViewToScr, vert))
     return Matrix.multiply(this.mx_ViewToScr, vert);
-  }
-
-  static makeNormalize() {
-    return makeScale(window_distance / (z_max * window_h_size), window_distance / (window_v_size * z_max), 1 / z_max);
-  }
-
-  static makeProjection() {
-    calc_z_c_min();
-    var mx_P = new Matrix(4, 4);
-    mx_P.elements = [
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1 / (1 - z_c_min), -z_c_min / (1 - z_c_min),
-      0, 0, 1, 0
-    ];
-    return mx_P;
   }
 
 }
 
 class World {
   constructor() {
-    this.Polys = [];
-    this.instanceCam = new Camera();
+    this.multiPolys = [];
+    const c_pos = [
+      Number(document.getElementById("cameraPosX").value),
+      Number(document.getElementById("cameraPosY").value),
+      Number(document.getElementById("cameraPosZ").value)
+    ]
+
+    const t_pos = [
+      Number(document.getElementById("cameraTargetX").value),
+      Number(document.getElementById("cameraTargetY").value),
+      Number(document.getElementById("cameraTargetZ").value)
+    ]
+    console.table(c_pos)
+    console.table(t_pos)
+    calc_z_c_min();
+    this.instanceCam = new Camera(c_pos, t_pos, window_distance, window_v_size, window_h_size, z_max, z_c_min, z_min, canvas_width, canvas_height);
+    console.log("World Initialized")
     this.PersepectivePolys = [];
   }
 
   addPoly(p) {
-    this.Polys.push(p)
+    this.multiPolys.push(p)
   }
 
   createPerse() {
@@ -322,11 +282,12 @@ class World {
     const spis = []
     for (let index = 0; index < this.PersepectivePolys.length; index++) {
       const element = this.PersepectivePolys[index];
-      console.log(element.verts[0]);
       let startp = this.instanceCam.ProjectToScreen(element.verts[0])
       let endp = this.instanceCam.ProjectToScreen(element.verts[1])
       let s_p = [startp.getElement(0, 0), startp.getElement(1, 0)]
       let e_p = [endp.getElement(0, 0), endp.getElement(1, 0)]
+
+      console.log("始点", startp, "終点", endp)
 
       const startPoint = new app.PathPointInfo();
       startPoint.anchor = s_p;
@@ -344,7 +305,6 @@ class World {
       spi.operation = constants.ShapeOperation.SHAPEXOR
       spi.entireSubPath = [startPoint, stopPoint]
       spis.push(spi)
-
     }
     await currentDoc.pathItems.add("Lines", spis)
     const lines = currentDoc.pathItems.getByName("Lines");
@@ -360,6 +320,38 @@ class World {
 
   }
 
+}
+
+class MultiPoly {
+  constructor() {
+    this.polys = []
+  }
+  addPoly(poly) {
+    this.polys.push(poly)
+  }
+
+  static createMultiPolyFromPath(pathItem) {
+    const mp = new MultiPoly()
+    for (let index = 0; index < pathItem.subPathItems.length; index++) {
+      const p = new Poly();
+      const subPaths = pathItem.subPathItems[index];
+      for (let indexj = 0; indexj < subPaths.pathPoints.length; indexj++) {
+        const point = subPaths.pathPoints[indexj];
+        const vert = new Matrix(4, 1);
+        vert.elements = [
+          point.anchor[0],
+          0,
+          point.anchor[1],
+          1
+        ]
+        p.addVert(vert)
+      }
+      console.log(p)
+      mp.addPoly(p)
+    }
+    console.log(mp)
+    return mp;
+  }
 }
 
 class Poly {
@@ -392,8 +384,13 @@ class Poly {
 
   }
 
-  static createPolyFromPath(path) {
-
+  static createPolyFromPath(pathItem) {
+    for (const key in pathItem) {
+      if (Object.hasOwnProperty.call(pathItem, key)) {
+        const element = pathItem[key];
+        console.log(element)
+      }
+    }
   }
 }
 
@@ -677,8 +674,8 @@ async function dFunc(executionControl) {
     "documentID": documentID,
     "name": "パース描画"
   });
-
   wld = new World();
+  console.log("TestLog")
   wld.createPerse();
   await wld.drawPerse();
 
@@ -759,30 +756,39 @@ entrypoints.setup({
 });
 
 function canvasTest() {
+  Init()
+  MultiPoly.createMultiPolyFromPath(currentDoc.pathItems.getByName("パス 4"))
 }
 
 function updateSelectionNormal() {
 }
 
-function updateNormalText(){
-  const element=document.getElementById("pickerNormalLength")
-  if(!element.value){
+function updateNormalText() {
+  const element = document.getElementById("pickerNormalLength")
+  if (!element.value) {
     return
   }
-  const t=document.getElementById("textNormal")
-  const pathNormal=currentDoc.pathItems.getByName(element.value).subPathItems[0]
-  const x=pathNormal.pathPoints[0].anchor[0]-pathNormal.pathPoints[1].anchor[0]
-  const y=pathNormal.pathPoints[0].anchor[1]-pathNormal.pathPoints[1].anchor[1]
-  const length=Math.sqrt(x**2+y**2)
+  const t = document.getElementById("textNormal")
+  const pathNormal = currentDoc.pathItems.getByName(element.value).subPathItems[0]
+  const x = pathNormal.pathPoints[0].anchor[0] - pathNormal.pathPoints[1].anchor[0]
+  const y = pathNormal.pathPoints[0].anchor[1] - pathNormal.pathPoints[1].anchor[1]
+  const length = Math.sqrt(x ** 2 + y ** 2)
   console.log(length)
-  t.textContent=""+Math.trunc(length)+"px = 1m";
+  t.textContent = "" + Math.trunc(length) + "px = 1m";
 }
 
-function pathLength(a,b){
-  const x=a.anchor[0]-b.anchor[0]
-  const y=a.anchor[1]-b.anchor[1]
-  const length=Math.sqrt(x**2+y**2)
+function pathLength(a, b) {
+  const x = a.anchor[0] - b.anchor[0]
+  const y = a.anchor[1] - b.anchor[1]
+  const length = Math.sqrt(x ** 2 + y ** 2)
   return length
+}
+
+function calcCamera() {
+  const element = document.getElementById("pickerNormalLength")
+  if (!element.value) {
+    return
+  }
 }
 
 document.getElementById("btnGo").addEventListener("click", drawPerspective);
@@ -792,4 +798,4 @@ document.getElementById("updateTargetPaths").addEventListener("click", updateSel
 document.getElementById("menuTargets").addEventListener("dblclick", addPath)
 document.getElementById("btnReset").addEventListener("click", canvasTest)
 document.getElementById("updateNormal").addEventListener("click", updateNormalPathPicker)
-document.getElementById("pickerNormalLength").addEventListener("change",updateNormalText)
+document.getElementById("pickerNormalLength").addEventListener("change", updateNormalText)

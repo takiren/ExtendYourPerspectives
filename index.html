@@ -3,7 +3,7 @@
 
 <head>
   <script src="index.js"></script>
-  <script src="https://unpkg.com/three@0.137.4/build/three.min.js"></script>
+  <script src=""></script>
 </head>
 <style>
   body {
@@ -39,6 +39,10 @@
 
   .sp-tab.selected sp-label {
     color: white;
+  }
+
+  sp-textfield {
+    width: 8em;
   }
 
   @media (prefers-color-scheme: light),
@@ -154,8 +158,24 @@
     border-color: #B8B8B8;
   }
 
-  sp-textfield {
-    size: small;
+  sp-picker {
+    width: 15em;
+  }
+
+  @media (min-width: 540px) {
+    #parent {
+      display: flex;
+    }
+
+    #child1 {
+      flex-grow: 1;
+      margin: 0em 0em;
+    }
+
+    #child2 {
+      flex-grow: 1;
+      margin: 0em 1em;
+    }
   }
 </style>
 
@@ -172,7 +192,7 @@
         <sp-label>プリミティブ</sp-label>
       </div>
     </div>
-    
+
     <div class="sp-tab-page visible" id="home-tab-page">
       <div class="group">
         <sp-label>基準</sp-label>
@@ -182,7 +202,9 @@
           </sp-menu>
         </sp-picker>
         <sp-button id="updateNormal" variant="primary">更新</sp-button>
-        <sp-label class="safe" id="textNormal"></sp-label>
+        <sp-textfield value="500" type="number" id="inputNormal" maxlength="6">
+        </sp-textfield>
+        <sp-label slot="label" class="safe" id="textNormal">px = 1 m</sp-label>
       </div>
       <div class="group">
         <sp-label>カメラ設定</sp-label>
@@ -260,35 +282,75 @@
         </sp-menu>
         <sp-detail>変形対象</sp-detail>
         <sp-menu id="menuCandidate">
-        </sp-menu>
+        </sp-menu>  
       </div>
       <sp-button id="updateTargetPaths">対象の更新</sp-button>
     </div>
     <div class="sp-tab-page" id="primitives-tab-page">
-      <div class="group">
-        <sp-field-group horizontal>
-          <sp-label>プリミティブ</sp-label>
-          <sp-menu id="menuPrimitives">
-            <sp-menu-item>平面</sp-menu-item>
-            <sp-menu-item>箱</sp-menu-item>
-            <sp-menu-item>球</sp-menu-item>
-            <sp-menu-item>円</sp-menu-item>
-          </sp-menu>
-          <sp-textfield>
-            <sp-label slot="label">X座標</sp-label>
-          </sp-textfield>
-          <sp-textfield>
-            <sp-label slot="label">Y座標</sp-label>
-          </sp-textfield>
-          <sp-textfield>
-            <sp-label slot="label">Z座標</sp-label>
-          </sp-textfield>
-        </sp-field-group>
-        <sp-button id="btnGeneratePrimitives">生成</sp-button>
+      <div id="parent">
+        <div id="child1">
+          <div class="group">
+            <sp-label>基本形状</sp-label>
+            <sp-menu id="menuPrimitives">
+              <sp-menu-item id="primitiveplane">平面</sp-menu-item>
+              <sp-menu-item id="primitivebox">箱</sp-menu-item>
+              <sp-menu-item id="primitivesphere">球</sp-menu-item>
+              <sp-menu-item id="primitivecircle">円</sp-menu-item>
+              <sp-menu-item id="primitivestairs">階段</sp-menu-item>
+            </sp-menu>
+          </div>
+          <div class="group">
+            <sp-label>階段</sp-label>
+            <sp-detail>全体高さ</sp-detail>
+            <sp-textfield type="number">
+            </sp-textfield>
+            <sp-detail>横幅</sp-detail>
+            <sp-textfield type="number">
+            </sp-textfield>
+          </div>
+        </div>
+        <div id="child2">
+          <div class="group">
+            <sp-label>設定</sp-label>
+            <div>
+
+              <sp-textfield type="number">
+                <sp-label slot="label">X座標</sp-label>
+              </sp-textfield>
+              <sp-textfield type="number">
+                <sp-label slot="label">Y座標</sp-label>
+              </sp-textfield>
+              <sp-textfield type="number">
+                <sp-label slot="label">Z座標</sp-label>
+              </sp-textfield>
+            </div>
+
+            <div>
+              <sp-textfield type="number">
+                <sp-label slot="label">Xサイズ</sp-label>
+              </sp-textfield>
+              <sp-textfield type="number">
+                <sp-label slot="label">Yサイズ</sp-label>
+              </sp-textfield>
+              <sp-textfield type="number">
+                <sp-label slot="label">Zサイズ</sp-label>
+              </sp-textfield>
+              <sp-slider min="-180" max="180" step="1" value="0">
+                <sp-label slot="label">X軸の回転</sp-label>
+              </sp-slider>
+              <sp-slider min="-180" max="180" step="1" value="0">
+                <sp-label slot="label">Y軸の回転</sp-label>
+              </sp-slider>
+              <sp-slider min="-180" max="180" step="1" value="0">
+                <sp-label slot="label">Z軸の回転</sp-label>
+              </sp-slider>
+            </div>
+            <sp-button id="btnGeneratePrimitives">生成</sp-button>
+          </div>
+
+        </div>
       </div>
     </div>
-  </div>
-
   </div>
 
 </body>

@@ -1,15 +1,24 @@
 const { Matrix } = require("./Matrix");
 
 class Camera {
-  constructor(CameraPos, TargetPos, w_dis, wvsize, whsize, z_m, zchilda, zmi) {
-    this.reset();
-    this.init();
+  constructor(CameraPos, TargetPos, w_dis, wvsize, whsize, z_m, zchilda, zmi, c_width, c_height) {
     this.location = new Matrix(3, 1);
-    this.location.elements = CameraPos;
+    this.location.elements = [
+      CameraPos[0],
+      CameraPos[1],
+      CameraPos[2]
+    ];
 
     console.log("カメラ座標", this.location);
     this.targetLoc = new Matrix(3, 1);
-    this.targetLoc.elements = TargetPos;
+    this.targetLoc.elements = [
+      TargetPos[0],
+      TargetPos[1],
+      TargetPos[2]
+    ];
+
+    this.canv_width = c_width;
+    this.canv_height = c_height;
 
     this.axis = [new Matrix(3, 1), new Matrix(3, 1), new Matrix(3, 1)];
 
@@ -26,9 +35,6 @@ class Camera {
     this.mp = this.makeProjection();
     this.mx_ViewToScr = this.makeViewToScr();
     this.scaleI = Matrix.makeScale(1, 1, 1);
-  }
-
-  reset() {
   }
 
   calcTargetVec() {
@@ -69,14 +75,14 @@ class Camera {
   }
 
   makeViewToScr() {
-    var mx = new Matrix(4, 4);
+    let mx = new Matrix(4, 4);
     mx.elements = [
       this.canv_width / 2, 0, 0, this.canv_width / 2,
       0, this.canv_height / 2, 0, this.canv_height / 2,
       0, 0, 1, 0,
       0, 0, 0, 1
     ];
-
+    console.table("ターブル", mx);
     return mx;
   }
 
@@ -97,7 +103,6 @@ class Camera {
 
   Project(vert) {
     vert = Matrix.multiply(this.scaleI, vert);
-    console.table(Matrix.log(this.mt));
     vert = Matrix.multiply(this.mt, vert);
     vert = Matrix.multiply(this.mn, vert);
     vert = Matrix.multiply(this.mp, vert);
@@ -107,10 +112,13 @@ class Camera {
 
   ProjectToScreen(vert) {
     vert = this.Project(vert);
+    console.log("スクリーン座標変換", this.mx_ViewToScr);
+    console.log("変換テスト", Matrix.multiply(this.mx_ViewToScr, vert));
     return Matrix.multiply(this.mx_ViewToScr, vert);
   }
 
 }
+
 module.exports = {
-    Camera
+  Camera
 }

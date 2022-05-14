@@ -2,11 +2,10 @@
 const { Matrix, Point } = require("./Matrix");
 const { entrypoints } = require("uxp");
 const { Camera } = require("./Camera");
-const { Poly } = require("./Poly");
 const { MultiPoly } = require("./MultiPoly");
 const { PrimitivePlane } = require("./Primitive");
-const { DrawObject } = require("./DrawObject");
-const { Drawer } = require("./Drawer")
+const { Drawer } = require("./Drawer");
+const { World } = require("./World");
 
 Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
   theTab.onclick = () => {
@@ -96,201 +95,6 @@ function calc_z_c_min() {
   z_c_min = z_min / z_max;
   return z_c_min;
 }
-
-class World {
-  constructor(CameraInstance) {
-    this.multiPolys = [];
-    const c_pos = [
-      Number(document.getElementById("cameraPosX").value),
-      Number(document.getElementById("cameraPosY").value),
-      Number(document.getElementById("cameraPosZ").value)
-    ]
-
-    const t_pos = [
-      Number(document.getElementById("cameraTargetX").value),
-      Number(document.getElementById("cameraTargetY").value),
-      Number(document.getElementById("cameraTargetZ").value)
-    ]
-    console.table(c_pos)
-    console.table(t_pos)
-    calc_z_c_min();
-    this.instanceCam = CameraInstance;
-    console.log("World Initialized")
-    this.PersepectivePolys = [];
-  }
-
-  addPoly(p) {
-    this.multiPolys.push(p)
-  }
-
-  createPerse(x, y, z) {
-    let pNumX = Math.trunc(Number(document.getElementById("perseLineNumX").value))
-    let pNumY = Math.trunc(Number(document.getElementById("perseLineNumY").value))
-    let pNumZ = Math.trunc(Number(document.getElementById("perseLineNumZ").value))
-    for (let index = 0; index < pNumZ + 1; index++) {
-      let vert1 = new Matrix(4, 1)
-      let vert2 = new Matrix(4, 1)
-      vert1.elements = [
-        pNumX,
-        0,
-        index,
-        1
-      ]
-
-      vert2.elements = [
-        0,
-        0,
-        index,
-        1
-      ]
-      this.PersepectivePolys.push(Poly.createLine(vert1, vert2))
-    }
-
-    for (let index = 0; index < pNumX + 1; index++) {
-      let vert1 = new Matrix(4, 1)
-      let vert2 = new Matrix(4, 1)
-      vert1.elements = [
-        index,
-        0,
-        pNumZ,
-        1
-      ]
-
-      vert2.elements = [
-        index,
-        0,
-        0,
-        1
-      ];
-      this.PersepectivePolys.push(Poly.createLine(vert1, vert2))
-    }
-    console.log("パースライン", this.PersepectivePolys)
-  }
-
-  getScreenLocs(poly) {
-    const v_scr = []
-    const verts = poly.getVertsWorld()
-    console.table("頂点座標", v_scr)
-    for (const key in verts) {
-      if (Object.hasOwnProperty.call(verts, key)) {
-        const element = verts[key];
-        v_scr.push(this.instanceCam.ProjectToScreen(element))
-      }
-    }
-    
-    return v_scr
-  }
-
-  IsClosed(poly) {
-    return poly.IsClosed()
-  }
-
-  getDrawObject(poly){
-    const pointsOnScreen = []
-    const verts = poly.getVertsWorld()
-    for (const key in verts) {
-      if (Object.hasOwnProperty.call(verts, key)) {
-        const element = verts[key];
-        const pMatrix = this.instanceCam.ProjectToScreen(element)
-        pointsOnScreen.push([
-          pMatrix.getElement(0, 0),
-          pMatrix.getElement(1, 0)
-        ])
-      }
-    }
-    console.log("PolyIsClosed", poly.IsClosed())
-
-    const IDrawObject = new DrawObject(pointsOnScreen, poly.IsClosed())
-    return IDrawObject
-  }
-
-  async drawPerse(executionControl) {
-    const spis = []
-    for (let index = 0; index < this.PersepectivePolys.length; index++) {
-      const element = this.PersepectivePolys[index];
-      let startp = this.instanceCam.ProjectToScreen(element.verts[0])
-      let endp = this.instanceCam.ProjectToScreen(element.verts[1])
-      let s_p = [startp.getElement(0, 0), startp.getElement(1, 0)]
-      let e_p = [endp.getElement(0, 0), endp.getElement(1, 0)]
-
-      console.log("始点", startp, "終点", endp)
-
-      const startPoint = new app.PathPointInfo();
-      startPoint.anchor = s_p;
-      startPoint.leftDirection = s_p;
-      startPoint.rightDirection = s_p;
-      startPoint.kind = constants.PointKind.CORNERPOINT;
-      const stopPoint = new app.PathPointInfo();
-      stopPoint.anchor = e_p;
-      stopPoint.leftDirection = e_p;
-      stopPoint.rightDirection = e_p;
-      stopPoint.kind = constants.PointKind.CORNERPOINT;
-
-      const spi = new app.SubPathInfo()
-      spi.closed = false;
-      spi.operation = constants.ShapeOperation.SHAPEXOR
-      spi.entireSubPath = [startPoint, stopPoint]
-      spis.push(spi)
-    }
-    await currentDoc.pathItems.add("Lines", spis)
-    const lines = currentDoc.pathItems.getByName("Lines");
-    await lines.strokePath();
-    await lines.remove();
-  }
-
-  async drawFromPoly(poly) {
-    const spi = new app.SubPathInfo()
-    spi.closed = poly.IsClosed()
-    spi.operation = constants.ShapeOperation.SHAPEXOR
-    const verts = poly.getVertsWorld()
-    const entirePoint = []
-    for (const key in verts) {
-      if (Object.hasOwnProperty.call(verts, key)) {
-        const element = verts[key];
-
-        const IPathPoint = new app.PathPointInfo()
-        const pMatrix = this.instanceCam.ProjectToScreen(element)
-        const pointOnScreen = [
-          pMatrix.getElement(0, 0),
-          pMatrix.getElement(1, 0)
-        ]
-
-        IPathPoint.anchor = pointOnScreen
-        IPathPoint.leftDirection = pointOnScreen
-        IPathPoint.rightDirection = pointOnScreen
-        IPathPoint.kind = constants.PointKind.CORNERPOINT
-        entirePoint.push(IPathPoint)
-      }
-    }
-    spi.entireSubPath = entirePoint
-
-    await currentDoc.pathItems.add("Primitive", [spi])
-    const lines = currentDoc.pathItems.getByName("Primitive")
-    await lines.strokePath()
-    await lines.remove()
-  }
-
-  getScreenLocations(poly) {
-    const pointsOnScreen = []
-    const verts = poly.getVertsWorld()
-    for (const key in verts) {
-      if (Object.hasOwnProperty.call(verts, key)) {
-        const element = verts[key];
-        const pMatrix = this.instanceCam.ProjectToScreen(element)
-        pointsOnScreen.push([
-          pMatrix.getElement(0, 0),
-          pMatrix.getElement(1, 0)
-        ])
-      }
-    }
-
-    const IDrawObject = new DrawObject(pointsOnScreen, poly.IsClosed())
-
-    return IDrawObject
-  }
-
-}
-
 
 function updateSelectionEyelevel() {
   if (!Init()) {
@@ -404,20 +208,6 @@ function updateTextCamPath() {
 
 async function drawPerspective() {
   await require('photoshop').core.executeAsModal(dFunc, { "commandName": "Test command" });
-  originm = new Matrix(4, 1)
-  originm.elements = [
-    1, 1, 1, 1
-  ]
-  p = new Poly(originm)
-  v = new Matrix(4, 1)
-  v.elements = [
-    0,
-    0,
-    0,
-    1
-  ]
-  p.addVert(v)
-
 }
 
 function createScene() {
@@ -450,25 +240,21 @@ async function dFunc(executionControl) {
     "name": "パース描画"
   });
 
+  const renderer = new Drawer(app, currentDoc, constants)
+
+  let pNumX = Math.trunc(Number(document.getElementById("perseLineNumX").value))
+  let pNumY = Math.trunc(Number(document.getElementById("perseLineNumY").value))
+  let pNumZ = Math.trunc(Number(document.getElementById("perseLineNumZ").value))
+
   wld = createScene()
-  wld.createPerse();
-  await wld.drawPerse();
+  wld.createPerse(
+    pNumX,
+    pNumY,
+    pNumZ
+  );
+  await renderer.draw(wld.getDrawObjectPerse())
   await hostControl.resumeHistory(suspensionID);
 
-  originm = new Matrix(4, 1)
-  originm.elements = [
-    0, 0, 0, 1
-  ]
-  p = new Poly(originm)
-  v = new Matrix(4, 1)
-  v.elements = [
-    1,
-    0,
-    1,
-    1
-  ]
-  p.addVert(v)
-  console.table(wld.getScreenLocs(p))
 }
 
 function addPathsToPicker(targetPickerName, subPathNum, pointsNum) {
@@ -501,30 +287,6 @@ function addPathsToPicker(targetPickerName, subPathNum, pointsNum) {
 
 function updateNormalPathPicker() {
   addPathsToPicker("menuNormalLength", 1, 2)
-}
-
-
-const createBase = (elm) => {
-  const container = document.createElement("div");
-  container.className = "group"
-  container.id = "canvasGroup"
-  elm.appendChild(container);
-  return { container: container };
-}
-
-class CreatePanel {
-  constructor() {
-
-  }
-  static createGroup(base, label) {
-    const container = document.createElement("div")
-    container.className = "group"
-    container.id = "primitibeGroup"
-    base.appendChild(container)
-  }
-
-  static createFooter() {
-  }
 }
 
 function updateSelectionNormal() {
@@ -574,8 +336,8 @@ async function primitiveDraw(executionControl) {
   });
 
   wld = createScene()
-  const renderer=new Drawer(app,currentDoc,constants)
-  
+  const renderer = new Drawer(app, currentDoc, constants)
+
   const IPrimitive = new PrimitivePlane(
     Matrix.makeVert(0, 0, 0),
     Matrix.makeScale(1, 1, 1),
@@ -614,7 +376,9 @@ function testFunction() {
   console.log(IPrimitive.getPoly())
   wld = createScene()
   console.log(wld.getDrawObject(IPrimitive.poly))
-  console.log("IsClosed? : ",IPrimitive.IsClosed())
+  console.log("IsClosed? : ", IPrimitive.IsClosed())
+  wld.createPerse(3, 3, 3)
+  console.log(wld.getDrawObjectPerse())
 }
 
 document.getElementById("btnGo").addEventListener("click", drawPerspective);

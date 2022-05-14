@@ -1,14 +1,32 @@
 class DrawObject{
-    constructor(Points,bClosed){
+    constructor(){
+        this.elements=[]
+    }
+
+    getElements(){
+        return this.elements;
+    }
+    addElement(elem){
+        this.elements.push(elem)
+    }
+}
+
+class DrawObjectElements{
+    constructor(points,bClosed){
         this.bClosed=bClosed
-        this.points=Points
+        this.points=points
     }
 
     getPoints(){
         return this.points
     }
+
     setClosed(){
         this.bClosed=true
+    }
+
+    setUnclosed(){
+        this.bClosed=false
     }
 
     IsClosed(){
@@ -17,5 +35,6 @@ class DrawObject{
 }
 
 module.exports={
-    DrawObject
+    DrawObject,
+    DrawObjectElements
 }

@@ -28,6 +28,8 @@ class Camera {
     this.zMax = z_m;
     this.z_dash_min = zchilda;
     this.zMin = zmi;
+    this.shift_x = 0
+    this.shift_y = 0
 
     this.calcAxis();
     this.mn = this.makeNormalize();
@@ -77,8 +79,8 @@ class Camera {
   makeViewToScr() {
     let mx = new Matrix(4, 4);
     mx.elements = [
-      this.canv_width / 2, 0, 0, this.canv_width / 2,
-      0, this.canv_height / 2, 0, this.canv_height / 2,
+      this.canv_width / 2, 0, 0, this.canv_width / 2 + this.canv_width * this.shift_x,
+      0, this.canv_height / 2, 0, this.canv_height / 2 + this.canv_height * this.shift_y,
       0, 0, 1, 0,
       0, 0, 0, 1
     ];
@@ -112,9 +114,14 @@ class Camera {
 
   ProjectToScreen(vert) {
     vert = this.Project(vert);
-    console.log("スクリーン座標変換", this.mx_ViewToScr);
     console.log("変換テスト", Matrix.multiply(this.mx_ViewToScr, vert));
     return Matrix.multiply(this.mx_ViewToScr, vert);
+  }
+
+  setShift(x, y) {
+    this.shift_x = x
+    this.shift_y = y
+    this.mx_ViewToScr = this.makeViewToScr();
   }
 
 }

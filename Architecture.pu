@@ -1,0 +1,64 @@
+@startuml Architecture
+
+skinparam {
+    monochrome true
+    padding 1
+}
+class Poly{
+    + Point[] verts
+    + Point origin
+    + Point[] getVertsWorld(void)
+}
+
+class Camera{
+    + Point Postion
+    + Matrix Rotation
+    + Number FOV
+    + Matrix projectToScreen(Matrix)
+}
+
+class World{
+    + Camera ICamera
+    + Poly[] MultiPolys
+    + Number[][x,y] getScreenLocations(Poly)
+}
+
+class Point{
+    + Matrix 4x1
+    頂点として4x1の行列を使う
+}
+
+class Matrix{
+    + Number row
+    + Number col
+    + constructor(row,col)
+    + set(Number[])
+    + getElement(i,j)
+    + setElement(i,j)
+    + getByIndex(index)
+    + setByIndex(index,value)
+    __Static method__
+    {static} - Matrix log(Matrix)
+    {static} -Matrix makeNorm(vec)
+    {static} -Matrix makeTranslation(x,y,z)
+    {static} -Matrix add(Matrix,Matrix)
+    {static} -Matrix Invert(Matrix)
+    {static} -Matrix multiply(multiplier: Matrix, target: Matrix)
+    {static} -Matrix makeInverse(mx:Matrix)
+    {static} -Matrix dot(vec1: Matrix(4,1), vec2: Matrix(4,1))
+}
+
+class Drawer{
+}
+
+class DrawObject{
+}
+
+World *-- Camera
+World *--Poly
+Point -|> Matrix
+Poly *--Point
+Drawer <- DrawObject
+DrawObject <- World
+
+@enduml

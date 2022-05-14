@@ -7,8 +7,8 @@
     {
       "app": "PS",
       "minVersion": "23.3",
-      "data":{
-        "apiVersion":2
+      "data": {
+        "apiVersion": 2
       }
     }
   ],
@@ -35,9 +35,9 @@
       },
       "icons": [
         {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_D.png",
+          "width": 23,
+          "height": 23,
+          "path": "icons/dark.png",
           "scale": [
             1,
             2
@@ -51,9 +51,9 @@
           ]
         },
         {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_N.png",
+          "width": 23,
+          "height": 23,
+          "path": "icons/light.png",
           "scale": [
             1,
             2
@@ -70,69 +70,12 @@
       "label": {
         "default": "ホーム"
       }
-    },
-    {
-      "type": "panel",
-      "id": "canvas",
-      "minimumSize": {
-        "width": 300,
-        "height": 300
-      },
-      "maximumSize": {
-        "width": 2000,
-        "height": 2000
-      },
-      "preferredDockedSize": {
-        "width": 230,
-        "height": 300
-      },
-      "preferredFloatingSize": {
-        "width": 300,
-        "height": 300
-      },
-      "icons": [
-        {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_D.png",
-          "scale": [
-            1,
-            2
-          ],
-          "theme": [
-            "dark",
-            "darkest"
-          ],
-          "species": [
-            "generic"
-          ]
-        },
-        {
-          "width": 32,
-          "height": 32,
-          "path": "icons/icon_N.png",
-          "scale": [
-            1,
-            2
-          ],
-          "theme": [
-            "lightest",
-            "light"
-          ],
-          "species": [
-            "generic"
-          ]
-        }
-      ],
-      "label": {
-        "default": "プリミティブ"
-      }
     }
   ],
   "icons": [
     {
-      "width": 23,
-      "height": 23,
+      "width": 46,
+      "height": 46,
       "path": "icons/dark.png",
       "scale": [
         1,
@@ -145,8 +88,8 @@
       ]
     },
     {
-      "width": 23,
-      "height": 23,
+      "width": 46,
+      "height": 46,
       "path": "icons/light.png",
       "scale": [
         1,

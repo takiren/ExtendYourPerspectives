@@ -87,9 +87,9 @@ class Matrix {
 
     static makeTranslation(x, y, z) {
         var translation = this.makeScale(1, 1, 1);
-        translation.setElement(1, 3, x);
-        translation.setElement(2, 3, y);
-        translation.setElement(3, 3, z);
+        translation.setElement(0, 3, x);
+        translation.setElement(1, 3, y);
+        translation.setElement(2, 3, z);
         return translation;
     }
 
@@ -105,10 +105,9 @@ class Matrix {
     }
 
     static Invert(mat) {
-        var m, n, mx;
-        mx = new Matrix(mat.getRow(), mat.getCol());
-        for (m = 0; m < mat.getRow(); m++) {
-            for (n = 0; n < mat.getCol(); n++) {
+        const mx = new Matrix(mat.getRow(), mat.getCol());
+        for (let m = 0; m < mat.getRow(); m++) {
+            for (let n = 0; n < mat.getCol(); n++) {
                 mx.setElement(m, n, -mat.getElement(m, n));
             }
         }
@@ -124,6 +123,14 @@ class Matrix {
             0, 0, 0, 1
         ];
         return mx_S;
+    }
+
+    static makeTranslationByMatrix(mat) {
+        return this.makeTranslation(mat.getElement(0, 0), mat.getElement(1, 0), mat.getElement(2, 0))
+    }
+
+    static translateByMatrix(translater, target) {
+        return this.multiply(this.makeTranslationByMatrix(translater), target)
     }
 
     static translate(mat, x, y, z) {
@@ -199,6 +206,18 @@ class Matrix {
     static transformFromWorldToView(mat) {
     }
 
+
+    static makeRotationY(radian) {
+        const mx = new Matrix(4, 4)
+        mx.elements = [
+            Math.cos(radian), 0, Math.sin(radian), 0,
+            0, 1, 0, 0,
+            -Math.sin(radian), 0, Math.cos(radian), 0,
+            0, 0, 0, 1
+        ]
+        return mx
+    }
+
     static makeAdjugate(mat) {
         var m, n, t, dim, mx;
         mx = new Matrix(mat.getRow(), mat.getCol());
@@ -248,8 +267,28 @@ class Matrix {
         }
         return mx;
     }
+
+    static makeVert(x, y, z) {
+        const v = new Matrix(4, 1)
+        if(arguments.length!=3){
+            console.error("頂点座標を正しく入力してください")
+            return
+        }
+        v.setElement(0, 0, x)
+        v.setElement(1, 0, y)
+        v.setElement(2, 0, z)
+        v.setElement(3, 0, 1)
+        return v
+    }
+}
+
+class Point extends Matrix{
+    constructor(){
+        super(4,1)
+    }
 }
 
 module.exports = {
-    Matrix
+    Matrix,
+    Point
 }

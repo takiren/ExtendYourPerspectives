@@ -1,0 +1,14 @@
+@startuml
+title 描画フロー
+Drawer->World:getScreenLocations
+loop i< Poly.verts.length
+World->Camera:ProjectToScreen(vert)
+Camera-->World: ScreenLocation
+end
+
+World-->Drawer: ScreenLocations
+
+Drawer->PhotoshopAPI:Create a Path By ScreenLocations
+PhotoshopAPI-->Drawer:done
+Drawer->PhotoshopAPI:Delete the path
+@enduml

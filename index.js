@@ -1,9 +1,13 @@
 
-const { Matrix } = require("./Matrix");
+const { Matrix, Point } = require("./Matrix");
 const { entrypoints } = require("uxp");
 const { Camera } = require("./Camera");
 const { Poly } = require("./Poly");
 const { MultiPoly } = require("./MultiPoly");
+const { PrimitivePlane } = require("./Primitive");
+const { DrawObject } = require("./DrawObject");
+const { Drawer } = require("./Drawer")
+
 Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
   theTab.onclick = () => {
     localStorage.setItem("currentTab", theTab.getAttribute("id"));
@@ -24,8 +28,8 @@ Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
   }
 });
 
-let app = window.require('photoshop').app;;
-let constants = window.require("photoshop").constants;;
+let app = window.require('photoshop').app;
+let constants = window.require("photoshop").constants;
 let currentDoc;
 let canvas_height;
 let canvas_width;
@@ -66,6 +70,7 @@ function Init() {
   InitCanvas();
   console.log("Initialized Success.");
   normalLength = document.getElementById("inputNormal")
+
   return true;
 }
 
@@ -86,6 +91,7 @@ function InitCanvas() {
 function ang_to_rad(ang) {
   return ang * Math.PI / 180;
 }
+
 function calc_z_c_min() {
   z_c_min = z_min / z_max;
   return z_c_min;
@@ -117,7 +123,7 @@ class World {
     this.multiPolys.push(p)
   }
 
-  createPerse() {
+  createPerse(x, y, z) {
     let pNumX = Math.trunc(Number(document.getElementById("perseLineNumX").value))
     let pNumY = Math.trunc(Number(document.getElementById("perseLineNumY").value))
     let pNumZ = Math.trunc(Number(document.getElementById("perseLineNumZ").value))
@@ -161,6 +167,42 @@ class World {
     console.log("パースライン", this.PersepectivePolys)
   }
 
+  getScreenLocs(poly) {
+    const v_scr = []
+    const verts = poly.getVertsWorld()
+    console.table("頂点座標", v_scr)
+    for (const key in verts) {
+      if (Object.hasOwnProperty.call(verts, key)) {
+        const element = verts[key];
+        v_scr.push(this.instanceCam.ProjectToScreen(element))
+      }
+    }
+    
+    return v_scr
+  }
+
+  IsClosed(poly) {
+    return poly.IsClosed()
+  }
+
+  getDrawObject(poly){
+    const pointsOnScreen = []
+    const verts = poly.getVertsWorld()
+    for (const key in verts) {
+      if (Object.hasOwnProperty.call(verts, key)) {
+        const element = verts[key];
+        const pMatrix = this.instanceCam.ProjectToScreen(element)
+        pointsOnScreen.push([
+          pMatrix.getElement(0, 0),
+          pMatrix.getElement(1, 0)
+        ])
+      }
+    }
+    console.log("PolyIsClosed", poly.IsClosed())
+
+    const IDrawObject = new DrawObject(pointsOnScreen, poly.IsClosed())
+    return IDrawObject
+  }
 
   async drawPerse(executionControl) {
     const spis = []
@@ -196,156 +238,57 @@ class World {
     await lines.remove();
   }
 
-}
+  async drawFromPoly(poly) {
+    const spi = new app.SubPathInfo()
+    spi.closed = poly.IsClosed()
+    spi.operation = constants.ShapeOperation.SHAPEXOR
+    const verts = poly.getVertsWorld()
+    const entirePoint = []
+    for (const key in verts) {
+      if (Object.hasOwnProperty.call(verts, key)) {
+        const element = verts[key];
 
-class Renderer{
+        const IPathPoint = new app.PathPointInfo()
+        const pMatrix = this.instanceCam.ProjectToScreen(element)
+        const pointOnScreen = [
+          pMatrix.getElement(0, 0),
+          pMatrix.getElement(1, 0)
+        ]
 
-}
+        IPathPoint.anchor = pointOnScreen
+        IPathPoint.leftDirection = pointOnScreen
+        IPathPoint.rightDirection = pointOnScreen
+        IPathPoint.kind = constants.PointKind.CORNERPOINT
+        entirePoint.push(IPathPoint)
+      }
+    }
+    spi.entireSubPath = entirePoint
 
-
-class Draw {
-  constructor() {
-
+    await currentDoc.pathItems.add("Primitive", [spi])
+    const lines = currentDoc.pathItems.getByName("Primitive")
+    await lines.strokePath()
+    await lines.remove()
   }
 
-  static async line(s_p, e_p) {
-    const startPoint = new app.PathPointInfo();
-    startPoint.anchor = s_p;
-    startPoint.leftDirection = s_p;
-    startPoint.rightDirection = s_p;
-    startPoint.kind = constants.PointKind.CORNERPOINT;
-    const stopPoint = new app.PathPointInfo();
-    stopPoint.anchor = e_p;
-    stopPoint.leftDirection = e_p;
-    stopPoint.rightDirection = e_p;
-    stopPoint.kind = constants.PointKind.CORNERPOINT;
-
-    const spi = new app.SubPathInfo();
-    spi.closed = false;
-    spi.operation = constants.ShapeOperation.SHAPEXOR;
-    spi.entireSubPath = [startPoint, stopPoint];
-    let line = await currentDoc.pathItems.add("Line", [spi]);
-    line = currentDoc.pathItems.getByName("Line");
-    await line.strokePath();
-    console.log("Draw Line");
-    line.remove();
-  }
-
-  static async persepectiveLines(executionControl) {
-    Init();
-    let camera = new Camera();
-
-    let hostControl = executionControl.hostControl;
-
-    // Get an ID for a target document
-    let documentID = await currentDoc.id;
-
-    // Suspend history state on the target document
-    // This will coalesce all changes into a single history state called
-    // 'Custom Command'
-    let suspensionID = await hostControl.suspendHistory({
-      "documentID": documentID,
-      "name": "Custom Command"
-    });
-    // modify the document
-    // . . .
-
-    let vert1 = new Matrix(4, 1);
-    let vert2 = new Matrix(4, 1);
-    let pNum = Math.trunc(Number(document.getElementById("perseLineNum").value));
-
-    console.log("Draw Perspectives", documentID);
-    for (var i = 0; i < pNum + 1; i++) {
-      executionControl.reportProgress({ "value": 1 / (pNum * 2) * (i + 1), "commandName": "Drawing lines" });
-      vert1.elements = [
-        pNum,
-        0,
-        i,
-        1
-      ];
-
-      vert2.elements = [
-        0,
-        0,
-        i,
-        1
-      ];
-
-      let startp = camera.ProjectToScreen(vert1);
-      let endp = camera.ProjectToScreen(vert2);
-      let s_p = [startp.getElement(0, 0), startp.getElement(1, 0)];
-      let e_p = [endp.getElement(0, 0), endp.getElement(1, 0)];
-
-      const startPoint = new app.PathPointInfo();
-      startPoint.anchor = s_p;
-      startPoint.leftDirection = s_p;
-      startPoint.rightDirection = s_p;
-      startPoint.kind = constants.PointKind.CORNERPOINT;
-      const stopPoint = new app.PathPointInfo();
-      stopPoint.anchor = e_p;
-      stopPoint.leftDirection = e_p;
-      stopPoint.rightDirection = e_p;
-      stopPoint.kind = constants.PointKind.CORNERPOINT;
-
-      const spi = new app.SubPathInfo();
-      spi.closed = false;
-      spi.operation = constants.ShapeOperation.SHAPEXOR;
-      spi.entireSubPath = [startPoint, stopPoint];
-      let line = await currentDoc.pathItems.add("Line", [spi]);
-      line = currentDoc.pathItems.getByName("Line");
-      await line.strokePath();
-      console.log("Draw Line");
-      line.remove();
-
+  getScreenLocations(poly) {
+    const pointsOnScreen = []
+    const verts = poly.getVertsWorld()
+    for (const key in verts) {
+      if (Object.hasOwnProperty.call(verts, key)) {
+        const element = verts[key];
+        const pMatrix = this.instanceCam.ProjectToScreen(element)
+        pointsOnScreen.push([
+          pMatrix.getElement(0, 0),
+          pMatrix.getElement(1, 0)
+        ])
+      }
     }
 
-    for (var i = 0; i < pNum + 1; i++) {
-      executionControl.reportProgress({ "value": 1 / (pNum * 2) * (i + 1 + pNum), "commandName": "Drawing lines" });
+    const IDrawObject = new DrawObject(pointsOnScreen, poly.IsClosed())
 
-      vert1.elements = [
-        i,
-        0,
-        pNum,
-        1
-      ];
-
-      vert2.elements = [
-        i,
-        0,
-        0,
-        1
-      ];
-
-      let startp = camera.ProjectToScreen(vert1);
-      let endp = camera.ProjectToScreen(vert2);
-      let s_p = [startp.getElement(0, 0), startp.getElement(1, 0)];
-      let e_p = [endp.getElement(0, 0), endp.getElement(1, 0)];
-
-      const startPoint = new app.PathPointInfo();
-      startPoint.anchor = s_p;
-      startPoint.leftDirection = s_p;
-      startPoint.rightDirection = s_p;
-      startPoint.kind = constants.PointKind.CORNERPOINT;
-      const stopPoint = new app.PathPointInfo();
-      stopPoint.anchor = e_p;
-      stopPoint.leftDirection = e_p;
-      stopPoint.rightDirection = e_p;
-      stopPoint.kind = constants.PointKind.CORNERPOINT;
-
-      const spi = new app.SubPathInfo();
-      spi.closed = false;
-      spi.operation = constants.ShapeOperation.SHAPEXOR;
-      spi.entireSubPath = [startPoint, stopPoint];
-      let line = await currentDoc.pathItems.add("Line", [spi]);
-      line = currentDoc.pathItems.getByName("Line");
-      await line.strokePath();
-      console.log("Draw Line");
-      line.remove();
-    }
-
-    // resume the history state
-    await hostControl.resumeHistory(suspensionID);
+    return IDrawObject
   }
+
 }
 
 
@@ -461,10 +404,39 @@ function updateTextCamPath() {
 
 async function drawPerspective() {
   await require('photoshop').core.executeAsModal(dFunc, { "commandName": "Test command" });
+  originm = new Matrix(4, 1)
+  originm.elements = [
+    1, 1, 1, 1
+  ]
+  p = new Poly(originm)
+  v = new Matrix(4, 1)
+  v.elements = [
+    0,
+    0,
+    0,
+    1
+  ]
+  p.addVert(v)
+
+}
+
+function createScene() {
+  const c_pos = [
+    Number(document.getElementById("cameraPosX").value),
+    Number(document.getElementById("cameraPosY").value),
+    Number(document.getElementById("cameraPosZ").value)
+  ]
+
+  const t_pos = [
+    Number(document.getElementById("cameraTargetX").value),
+    Number(document.getElementById("cameraTargetY").value),
+    Number(document.getElementById("cameraTargetZ").value)
+  ]
+  return new World(new Camera(c_pos, t_pos, window_distance, window_v_size, window_h_size, z_max, z_c_min, z_min, canvas_width, canvas_height));
 }
 
 async function dFunc(executionControl) {
-  Init();
+  Init()
   let hostControl = executionControl.hostControl;
 
   // Get an ID for a target document
@@ -477,13 +449,26 @@ async function dFunc(executionControl) {
     "documentID": documentID,
     "name": "パース描画"
   });
-  wld = new World(new Camera(c_pos, t_pos, window_distance, window_v_size, window_h_size, z_max, z_c_min, z_min, canvas_width, canvas_height));
-  console.log("TestLog")
+
+  wld = createScene()
   wld.createPerse();
   await wld.drawPerse();
-
   await hostControl.resumeHistory(suspensionID);
 
+  originm = new Matrix(4, 1)
+  originm.elements = [
+    0, 0, 0, 1
+  ]
+  p = new Poly(originm)
+  v = new Matrix(4, 1)
+  v.elements = [
+    1,
+    0,
+    1,
+    1
+  ]
+  p.addVert(v)
+  console.table(wld.getScreenLocs(p))
 }
 
 function addPathsToPicker(targetPickerName, subPathNum, pointsNum) {
@@ -539,27 +524,7 @@ class CreatePanel {
   }
 
   static createFooter() {
-
   }
-}
-
-entrypoints.setup({
-  panels: {
-    vanilla: {
-      show(event) {
-      }
-    },
-    canvas: {
-      show(event) {
-        CreatePanel.createGroup(event.node, "")
-      }
-    }
-  }
-});
-
-function canvasTest() {
-  Init()
-  MultiPoly.createMultiPolyFromPath(currentDoc.pathItems.getByName("パス 4"))
 }
 
 function updateSelectionNormal() {
@@ -593,11 +558,71 @@ function calcCamera() {
   }
 }
 
+async function primitiveDraw(executionControl) {
+  Init()
+  let hostControl = executionControl.hostControl;
+
+  // Get an ID for a target document
+  let documentID = await currentDoc.id;
+
+  // Suspend history state on the target document
+  // This will coalesce all changes into a single history state called
+  // 'Custom Command'
+  let suspensionID = await hostControl.suspendHistory({
+    "documentID": documentID,
+    "name": "パース描画"
+  });
+
+  wld = createScene()
+  const renderer=new Drawer(app,currentDoc,constants)
+  
+  const IPrimitive = new PrimitivePlane(
+    Matrix.makeVert(0, 0, 0),
+    Matrix.makeScale(1, 1, 1),
+    Matrix.makeRotationY(0)
+  )
+
+  console.table(wld.getDrawObject(IPrimitive.poly))
+  await renderer.draw(wld.getDrawObject(IPrimitive.poly))
+  await hostControl.resumeHistory(suspensionID);
+
+}
+
+async function generatePrimitive() {
+  const Tprimitive = document.getElementById("menuPrimitives").value
+  await require('photoshop').core.executeAsModal(primitiveDraw, { "commandName": "Test command" });
+
+
+  switch (Tprimitive) {
+    case plane:
+
+      break;
+
+    default:
+      console.log("Nothing selected")
+      break;
+  }
+}
+
+function testFunction() {
+  Init()
+  const IPrimitive = new PrimitivePlane(
+    Matrix.makeVert(0, 0, 0),
+    Matrix.makeScale(1, 1, 1),
+    Matrix.makeRotationY(0)
+  )
+  console.log(IPrimitive.getPoly())
+  wld = createScene()
+  console.log(wld.getDrawObject(IPrimitive.poly))
+  console.log("IsClosed? : ",IPrimitive.IsClosed())
+}
+
 document.getElementById("btnGo").addEventListener("click", drawPerspective);
 document.getElementById("btnUpdateCameraPath").addEventListener("click", updateSelectionCameraPath);
 document.getElementById("pickerCamerapath").addEventListener("change", updateTextCamPath);
 document.getElementById("updateTargetPaths").addEventListener("click", updateSelectionTargetPaths)
 document.getElementById("menuTargets").addEventListener("dblclick", addPath)
-document.getElementById("btnReset").addEventListener("click", canvasTest)
 document.getElementById("updateNormal").addEventListener("click", updateNormalPathPicker)
 document.getElementById("pickerNormalLength").addEventListener("change", updateNormalText)
+document.getElementById("btnGeneratePrimitive").addEventListener("click", generatePrimitive)
+document.getElementById("btnReset").addEventListener("click", testFunction)

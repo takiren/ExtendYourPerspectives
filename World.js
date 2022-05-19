@@ -1,17 +1,22 @@
 const { Matrix } = require("./Matrix");
 const { Poly } = require("./Poly");
+const { MultiPoly } = require("./MultiPoly")
 const { DrawObject, DrawObjectElements } = require("./DrawObject");
 
 class World {
   constructor(CameraInstance) {
     this.multiPolys = [];
+    this.polys = []
     this.instanceCam = CameraInstance;
     console.log("World Initialized");
     this.PersepectivePolys = [];
   }
 
   addPoly(p) {
-    this.multiPolys.push(p);
+    this.polys.push(p)
+  }
+  addMultiPoly(mp) {
+    this.multiPolys.push(mp)
   }
 
   createPerse(x, y, z) {
@@ -73,7 +78,32 @@ class World {
     return poly.IsClosed();
   }
 
-  getDrawObject(poly) {
+  getDrawObjectFromWorld() {
+    const IDrawObject = new DrawObject()
+
+    for (const key in this.polys) {
+      if (Object.hasOwnProperty.call(this.polys, key)) {
+        const element = this.polys[key];
+        IDrawObject.addElement(this.getDrawObjectElement(element))
+      }
+    }
+
+    for (const key in this.multiPolys) {
+      if (Object.hasOwnProperty.call(this.multiPolys, key)) {
+        const multipoly = this.multiPolys[key];
+        for (const key in multipoly.getPolys()) {
+          if (Object.hasOwnProperty.call(multipoly.getPolys(), key)) {
+            const poly = multipoly.getPolys()[key];
+            IDrawObject.addElement(this.getDrawObjectElement(poly))
+          }
+        }
+      }
+    }
+
+    return IDrawObject
+  }
+
+  getDrawObjectElement(poly) {
     const pointsOnScreen = [];
     const verts = poly.getVertsWorld();
     for (const key in verts) {
@@ -89,9 +119,42 @@ class World {
     console.log("PolyIsClosed", poly.IsClosed());
     const IDrawObjectElements = new DrawObjectElements(pointsOnScreen, poly.IsClosed());
 
+    return IDrawObjectElements
+  }
+
+  getDrawObject(poly) {
     const IDrawObject = new DrawObject();
-    IDrawObject.addElement(IDrawObjectElements);
+
+    IDrawObject.addElement(this.getDrawObjectElement(poly));
     return IDrawObject;
+  }
+
+  getDrawObjectFromMultiPoly(multipoly) {
+    const IDrawObject = new DrawObject();
+    const IMultiPoly = multipoly.getPolys();
+
+    for (const key in IMultiPoly) {
+      if (Object.hasOwnProperty.call(IMultiPoly, key)) {
+        const elementPoly = IMultiPoly[key];
+        const pointsOnScreen = []
+        const verts = elementPoly.getVertsWorld()
+
+        for (const key in verts) {
+          if (Object.hasOwnProperty.call(verts, key)) {
+            const element = verts[key];
+            const pMatrix = this.instanceCam.ProjectToScreen(element)
+            pointsOnScreen.push([
+              pMatrix.getElement(0, 0),
+              pMatrix.getElement(1, 0)
+            ])
+          }
+        }
+        const IDrawObjectElements = new DrawObjectElements(pointsOnScreen, elementPoly.IsClosed())
+        IDrawObject.addElement(IDrawObjectElements)
+      }
+    }
+
+    return IDrawObject
   }
 
   getDrawObjectPerse() {

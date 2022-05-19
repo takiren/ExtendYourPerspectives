@@ -1,11 +1,11 @@
 
 const { Matrix, Point } = require("./Matrix");
-const { entrypoints } = require("uxp");
 const { Camera } = require("./Camera");
 const { MultiPoly } = require("./MultiPoly");
 const { PrimitivePlane } = require("./Primitive");
 const { Drawer } = require("./Drawer");
 const { World } = require("./World");
+const { Vector, Vector2, Vector3 } = require("./Vector")
 
 Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
   theTab.onclick = () => {
@@ -50,8 +50,9 @@ let cameraTargetPos = [0, 0, 0];
 let normalLength;
 
 function Init() {
+  //初期化処理
+  //こいつを呼ばないとappもcurrentDocも未定義だからなんにもならない
   if (!app) {
-    // 初期化処理．
   }
   console.log("Initializing...");
   currentDoc = app.activeDocument;
@@ -68,13 +69,28 @@ function Init() {
   window_distance = 1;
   InitCanvas();
   console.log("Initialized Success.");
-  normalLength = document.getElementById("inputNormal")
-
+  normalLength = Number(document.getElementById("inputNormal").value)
   return true;
 }
 
+function createScene() {
+  //World, Cameraインスタンスを作成
+  const c_pos = [
+    Number(document.getElementById("cameraPosX").value),
+    Number(document.getElementById("cameraPosY").value),
+    Number(document.getElementById("cameraPosZ").value)
+  ]
+
+  const t_pos = [
+    Number(document.getElementById("cameraTargetX").value),
+    Number(document.getElementById("cameraTargetY").value),
+    Number(document.getElementById("cameraTargetZ").value)
+  ]
+  return new World(new Camera(c_pos, t_pos, window_distance, window_v_size, window_h_size, z_max, z_c_min, z_min, canvas_width, canvas_height));
+}
+
 function InitCanvas() {
-  //キャンバスの初期化．
+  //キャンバスの初期化(投影面とドキュメントのサイズの定義)
   canvas_height = currentDoc.height;
   canvas_width = currentDoc.width;
 
@@ -88,7 +104,11 @@ function InitCanvas() {
 }
 
 function ang_to_rad(ang) {
+  //角度からラジアンに変換
   return ang * Math.PI / 180;
+}
+function rad_to_ang(radian) {
+  return radian * 180 / Math.PI
 }
 
 function calc_z_c_min() {
@@ -96,36 +116,8 @@ function calc_z_c_min() {
   return z_c_min;
 }
 
-function updateSelectionEyelevel() {
-  if (!Init()) {
-    console.alert("Initialize Failed")
-    return;
-  }
-  const eyelevelElement = document.getElementById("menuEyelevel");
-  var i;
-  while (eyelevelElement.lastChild) {
-    eyelevelElement.removeChild(eyelevelElement.lastChild);
-  }
-
-  var pathItems = currentDoc.pathItems;
-  for (i = 0; i < pathItems.length; i++) {
-    var path = pathItems[i];
-    console.log("Name", path.name, "Path length.", path.subPathItems.length, "Type:", path.kind);
-    if (path.kind != constants.PathKind.NORMALPATH || path.subPathItems.length != 1) {
-      console.log("Loop passed.")
-      continue;
-    }
-    if (path.subPathItems[0].pathPoints.length != 2) {
-      continue;
-    }
-    var newSpmenu = document.createElement("sp-menu-item");
-    newSpmenu.textContent = path.name;
-    newSpmenu.value = path.name;
-    eyelevelElement.appendChild(newSpmenu);
-  }
-}
-
 function updateSelectionTargetPaths() {
+  //変換対象のパスを指定。現在未使用
   Init();
   const tarPathElement = document.getElementById("menuTargets")
   while (tarPathElement.lastChild) {
@@ -144,33 +136,8 @@ function updateSelectionTargetPaths() {
 }
 
 function updateSelectionCameraPath() {
-  if (!Init()) {
-    console.alert("Initialize Failed")
-    return;
-  }
-  const camPathlElement = document.getElementById("menuCameraPath");
-  var i;
-  while (camPathlElement.lastChild) {
-    camPathlElement.removeChild(camPathlElement.lastChild);
-  }
-
-  var pathItems = currentDoc.pathItems;
-
-  for (i = 0; i < pathItems.length; i++) {
-    var path = pathItems[i];
-    console.log("Name", path.name, "Path length.", path.subPathItems.length, "Type:", path.kind);
-    if (path.kind != constants.PathKind.NORMALPATH || path.subPathItems.length != 1) {
-      console.log("Loop passed.")
-      continue;
-    }
-    if (path.subPathItems[0].pathPoints.length != 3) {
-      continue;
-    }
-    var newSpmenu = document.createElement("sp-menu-item");
-    newSpmenu.textContent = path.name;
-    newSpmenu.value = path.name;
-    camPathlElement.appendChild(newSpmenu);
-  }
+  addPathsToPicker("menuCameraPath", 1, 3)
+  return
 }
 
 function addPath() {
@@ -181,16 +148,6 @@ function addPath() {
   newSpmenu.textContent = target.value
   newSpmenu.value = target.value
   candidate.appendChild(newSpmenu)
-}
-
-function updateTextEyelevel() {
-  console.log("Updating text");
-  if (document.getElementById("menuEyelevel").length == 0) {
-    return false;
-  }
-  const index = document.getElementById("pickerEyelevel");
-  var textElement = document.getElementById("textEyelevel");
-  textElement.textContent = index.selectedIndex.value;
 }
 
 function updateTextCamPath() {
@@ -210,20 +167,6 @@ async function drawPerspective() {
   await require('photoshop').core.executeAsModal(dFunc, { "commandName": "Test command" });
 }
 
-function createScene() {
-  const c_pos = [
-    Number(document.getElementById("cameraPosX").value),
-    Number(document.getElementById("cameraPosY").value),
-    Number(document.getElementById("cameraPosZ").value)
-  ]
-
-  const t_pos = [
-    Number(document.getElementById("cameraTargetX").value),
-    Number(document.getElementById("cameraTargetY").value),
-    Number(document.getElementById("cameraTargetZ").value)
-  ]
-  return new World(new Camera(c_pos, t_pos, window_distance, window_v_size, window_h_size, z_max, z_c_min, z_min, canvas_width, canvas_height));
-}
 
 async function dFunc(executionControl) {
   Init()
@@ -281,6 +224,7 @@ function addPathsToPicker(targetPickerName, subPathNum, pointsNum) {
     var newSpmenu = document.createElement("sp-menu-item");
     newSpmenu.textContent = path.name;
     newSpmenu.value = path.name;
+    console.log(newSpmenu.value)
     pickerNormal.appendChild(newSpmenu);
   }
 }
@@ -297,13 +241,13 @@ function updateNormalText() {
   if (!element.value) {
     return
   }
-  const t = document.getElementById("textNormal")
+  const t = document.getElementById("inputNormal")
   const pathNormal = currentDoc.pathItems.getByName(element.value).subPathItems[0]
   const x = pathNormal.pathPoints[0].anchor[0] - pathNormal.pathPoints[1].anchor[0]
   const y = pathNormal.pathPoints[0].anchor[1] - pathNormal.pathPoints[1].anchor[1]
   const length = Math.sqrt(x ** 2 + y ** 2)
-  console.log(length)
-  t.textContent = "" + Math.trunc(length) + "px = 1m";
+  t.value = Math.trunc(length);
+  console.log(t.value)
 }
 
 function pathLength(a, b) {
@@ -313,14 +257,14 @@ function pathLength(a, b) {
   return length
 }
 
-function calcCamera() {
-  const element = document.getElementById("pickerNormalLength")
-  if (!element.value) {
-    return
-  }
+
+
+
+async function generatePrimitive() {
+  await require('photoshop').core.executeAsModal(DoPrimitiveDraw, { "commandName": "Test command" });
 }
 
-async function primitiveDraw(executionControl) {
+async function DoPrimitiveDraw(executionControl) {
   Init()
   let hostControl = executionControl.hostControl;
 
@@ -335,51 +279,133 @@ async function primitiveDraw(executionControl) {
     "name": "パース描画"
   });
 
+  //ここから
   wld = createScene()
-  const renderer = new Drawer(app, currentDoc, constants)
-
-  const IPrimitive = new PrimitivePlane(
-    Matrix.makeVert(0, 0, 0),
-    Matrix.makeScale(1, 1, 1),
-    Matrix.makeRotationY(0)
-  )
-
-  console.table(wld.getDrawObject(IPrimitive.poly))
-  await renderer.draw(wld.getDrawObject(IPrimitive.poly))
-  await hostControl.resumeHistory(suspensionID);
-
-}
-
-async function generatePrimitive() {
+  const renderer = new Drawer(app, currentDoc, constants) //Drawerをrendererでインスタンス化．
   const Tprimitive = document.getElementById("menuPrimitives").value
-  await require('photoshop').core.executeAsModal(primitiveDraw, { "commandName": "Test command" });
-
 
   switch (Tprimitive) {
-    case plane:
-
+    case 'plane':
+      const IPrimitive = new PrimitivePlane(
+        Matrix.makeVert(0, 0, 0),
+        Matrix.makeScale(1, 1, 1),
+        Matrix.makeRotationY(0)
+      )
+      console.table(wld.getDrawObject(IPrimitive.poly))
+      await renderer.draw(wld.getDrawObject(IPrimitive.poly))
       break;
+
+    case 'box':
+      break
 
     default:
-      console.log("Nothing selected")
-      break;
+      console.warn("プリミティブが未指定です．")
+      await hostControl.resumeHistory(suspensionID)
+      return
   }
+
+  //ここまで
+  await hostControl.resumeHistory(suspensionID);
 }
 
 function testFunction() {
   Init()
-  const IPrimitive = new PrimitivePlane(
-    Matrix.makeVert(0, 0, 0),
-    Matrix.makeScale(1, 1, 1),
-    Matrix.makeRotationY(0)
-  )
-  console.log(IPrimitive.getPoly())
-  wld = createScene()
-  console.log(wld.getDrawObject(IPrimitive.poly))
-  console.log("IsClosed? : ", IPrimitive.IsClosed())
-  wld.createPerse(3, 3, 3)
-  console.log(wld.getDrawObjectPerse())
+  const path = currentDoc.pathItems.getByName("mptest")
+  console.log(MultiPoly.createMultiPolyFromPath(path, 1 / normalLength))
+  const v1 = new Vector2()
+  const v2 = new Vector2()
+  v1.elements = [
+    4,
+    3
+  ]
+  v2.elements = [
+    4,
+    -3
+  ]
+  console.log(Vector.bisector2(v1, v2))
+
+  console.log("内積", Matrix.dot(v1, v2))
 }
+
+function calcCamera() {
+  const element = document.getElementById("pickerCamerapath")
+  if (!element.value) {
+    console.error("カメラパスが指定されていません")
+    return
+  }
+  console.log("カメラパスname ", element.value)
+  const camPath = currentDoc.pathItems.getByName(element.value).subPathItems[0]
+  console.log("カメラパス", camPath.pathPoints.length)
+  const v1 = new Vector2()
+  const v2 = new Vector2()
+  v1.elements = [
+    camPath.pathPoints[0].anchor[0] - camPath.pathPoints[1].anchor[0],
+    camPath.pathPoints[0].anchor[1] - camPath.pathPoints[1].anchor[1]
+  ]
+  v2.elements = [
+    camPath.pathPoints[2].anchor[0] - camPath.pathPoints[1].anchor[0],
+    camPath.pathPoints[2].anchor[1] - camPath.pathPoints[1].anchor[1]
+  ]
+  console.table(v1.elements)
+  console.table(v2.elements)
+  console.log()
+  const fov = Vector.formedAngle(v1, v2)
+  console.log("カメラ画角", rad_to_ang(fov))
+  const camLoc = new Vector2()
+  camLoc.elements = [
+    camPath.pathPoints[1].anchor[0] / normalLength,
+    camPath.pathPoints[1].anchor[1] / normalLength
+  ]
+  const tagetVector = Vector.bisector2(v1, v2)
+  console.log(tagetVector)
+  const targetLoc = Vector.add(tagetVector, camLoc)
+  console.log("注視点", targetLoc)
+
+  document.getElementById("cameraPosX").value = "" + camPath.pathPoints[1].anchor[0] / normalLength
+  document.getElementById("cameraPosZ").value = "" + camPath.pathPoints[1].anchor[1] / normalLength
+
+  document.getElementById("cameraTargetX").value = "" + targetLoc.elements[0]
+  document.getElementById("cameraTargetZ").value = "" + targetLoc.elements[1]
+  document.getElementById("cameraFOV").value = "" + rad_to_ang(fov)
+}
+
+function offsetReset() {
+  document.getElementById("sliderOffsetX").value = 0
+  document.getElementById("sliderOffsetY").value = 0
+}
+
+async function transform() {
+  //パスの変形を行う
+  await require('photoshop').core.executeAsModal(DoTransform, { "commandName": "Transformation" })
+}
+
+async function DoTransform(executionControl) {
+  Init()
+
+  let hostControl = executionControl.hostControl
+
+  let documentID = await currentDoc.id
+
+  let suspensionID = await hostControl.suspendHistory({
+    "documentID": documentID,
+    "name": "パース描画"
+  })
+
+  wld = createScene()
+  const renderer = new Drawer(app, currentDoc, constants)
+  const path = currentDoc.pathItems.getByName(document.getElementById("menuTargets").value)
+  wld.addMultiPoly(MultiPoly.createMultiPolyFromPath(path, 1 / normalLength))
+  const Idobj = wld.getDrawObjectFromWorld()
+  console.log(Idobj)
+  await renderer.draw(Idobj)
+  await hostControl.resumeHistory(suspensionID)
+}
+
+async function cameraTest() {
+  await require('photoshop').core.executeAsModal(doCameraTest, { "commandName": "CameraTest" })
+}
+
+//イベント登録用
 
 document.getElementById("btnGo").addEventListener("click", drawPerspective);
 document.getElementById("btnUpdateCameraPath").addEventListener("click", updateSelectionCameraPath);
@@ -390,3 +416,7 @@ document.getElementById("updateNormal").addEventListener("click", updateNormalPa
 document.getElementById("pickerNormalLength").addEventListener("change", updateNormalText)
 document.getElementById("btnGeneratePrimitive").addEventListener("click", generatePrimitive)
 document.getElementById("btnReset").addEventListener("click", testFunction)
+document.getElementById("btnCalcCamera").addEventListener("click", calcCamera)
+document.getElementById("btnResetOffset").addEventListener("click", offsetReset)
+document.getElementById("btnTransform").addEventListener("click", transform)
+document.getElementById("world").addEventListener("click", updateSelectionTargetPaths)

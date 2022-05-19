@@ -16,6 +16,14 @@ class PrimitiveBase {
         console.error("基底クラスが呼び出されました．この関数は無効です")
         return false
     }
+
+    setLocation(matrix){
+        this.loc=matrix
+    }
+
+    setScale(matrix){
+        this.scl=matrix
+    }
 }
 
 class PrimitivePlane extends PrimitiveBase{
@@ -26,6 +34,8 @@ class PrimitivePlane extends PrimitiveBase{
         this.poly.verts.push(Matrix.makeVert(0.5,-0.5,0))
         this.poly.setClosed()
         console.log("平面を作成")
+
+        this.poly.TransformOverride(this.rot)
     }
 
     getPoly(){

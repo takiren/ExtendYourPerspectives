@@ -245,6 +245,20 @@ class Matrix {
     }
 
     static dot(vec1, vec2) {
+        if (vec1.getCol() != 1) {
+            console.error("ベクトルの計算しかできません．")
+        }
+        const loopNum = vec1.getRow()
+        if (loopNum != vec2.getRow()) {
+            console.error("ベクトルの次元が等しくありません")
+            return null
+        }
+
+        let nDot = 0;
+        for (let index = 0; index < loopNum; index++) {
+            nDot += vec1.elements[index] * vec2.elements[index]
+        }
+        return nDot
         return vec1.getElement(0, 0) * vec2.getElement(0, 0) + vec1.getElement(1, 0) * vec2.getElement(1, 0) + vec1.getElement(2, 0) * vec2.getElement(2, 0);
     }
 
@@ -270,7 +284,7 @@ class Matrix {
 
     static makeVert(x, y, z) {
         const v = new Matrix(4, 1)
-        if(arguments.length!=3){
+        if (arguments.length != 3) {
             console.error("頂点座標を正しく入力してください")
             return
         }
@@ -282,11 +296,13 @@ class Matrix {
     }
 }
 
-class Point extends Matrix{
-    constructor(){
-        super(4,1)
+class Point extends Matrix {
+    constructor() {
+        super(4, 1)
     }
 }
+
+
 
 module.exports = {
     Matrix,

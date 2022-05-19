@@ -67,10 +67,17 @@ class Camera {
 
   makeCameraTransform() {
     var mx = new Matrix(4, 4);
+    console.log("カメラ location",this.location)
     mx.elements = [
       this.axis[0].getElement(0, 0), this.axis[0].getElement(0, 1), this.axis[0].getElement(0, 2), -Matrix.dot(this.axis[0], this.location),
       this.axis[1].getElement(0, 0), this.axis[1].getElement(0, 1), this.axis[1].getElement(0, 2), -Matrix.dot(this.axis[1], this.location),
       this.axis[2].getElement(0, 0), this.axis[2].getElement(0, 1), this.axis[2].getElement(0, 2), -Matrix.dot(this.axis[2], this.location),
+      0, 0, 0, 1
+    ];
+    mx.elements = [
+      this.axis[0].getElement(0, 0), this.axis[1].getElement(0, 0), this.axis[2].getElement(0, 0), -Matrix.dot(this.axis[0], this.location),
+      this.axis[0].getElement(1, 0), this.axis[1].getElement(1, 0), this.axis[2].getElement(1, 0), -Matrix.dot(this.axis[1], this.location),
+      this.axis[0].getElement(2, 0), this.axis[1].getElement(2, 0), this.axis[2].getElement(2, 0), -Matrix.dot(this.axis[2], this.location),
       0, 0, 0, 1
     ];
     return mx;

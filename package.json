@@ -1,7 +1,19 @@
 {
-  "name": "uxp-template-ps-starter",
-  "version": "1.0.0",
-  "description": "Starter template for creating Adobe UXP based photoshop plugin.",
-  "author": "Adobe Inc",
-  "license": "Apache-2.0"
+  "name": "extendyourperspectives",
+  "version": "0.0.1",
+  "description": "This starter plugin is a good place to get started when developing for Photoshop. It does not rely on any frameworks or build steps -- hence the name \"Vanilla\".",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Taki",
+  "license": "ISC",
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "typescript": "^4.6.4"
+  },
+  "devDependencies": {
+    "gulp-concat": "^2.6.1",
+    "jest": "^28.1.0"
+  }
 }

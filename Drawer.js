@@ -47,11 +47,6 @@ class Drawer {
         await lines.remove()
     }
 
-
-    async drawPersepectiveLines() {
-
-    }
-
 }
 
 module.exports = {

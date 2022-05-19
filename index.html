@@ -200,8 +200,9 @@
         <sp-label>プリミティブ</sp-label>
       </div>
     </div>
-
+    
     <div class="sp-tab-page visible" id="home-tab-page">
+      <sp-heading>お手軽パースツール</sp-heading>
       <div class="group">
         <sp-label>基準</sp-label>
         <sp-detal>基準線</sp-detal>
@@ -212,30 +213,30 @@
         <sp-button id="updateNormal" variant="primary">更新</sp-button>
         <sp-textfield value="500" type="number" id="inputNormal" maxlength="6">
         </sp-textfield>
-        <sp-label slot="label" class="safe" id="textNormal">px = 1 m</sp-label>
+        <sp-label slot="label" class="safe">px = 1 m</sp-label>
       </div>
       <div class="group">
         <sp-label>カメラ設定</sp-label>
 
         <div>
-          <sp-textfield value="-3.0" type="number" id="cameraPosX">
+          <sp-textfield value="-3.0" type="text" id="cameraPosX">
             <sp-label slot="label">カメラのX座標</sp-label>
           </sp-textfield>
-          <sp-textfield value="1.5" type="number" id="cameraPosY">
+          <sp-textfield value="1.5" type="text" id="cameraPosY">
             <sp-label slot="label">カメラのY座標</sp-label>
           </sp-textfield>
-          <sp-textfield value="-3.0" type="number" id="cameraPosZ">
+          <sp-textfield value="-3.0" type="text" id="cameraPosZ">
             <sp-label slot="label">カメラのZ座標</sp-label>
           </sp-textfield>
         </div>
         <div>
-          <sp-textfield value="10.0" type="number" id="cameraTargetX">
+          <sp-textfield value="10.0" type="text" id="cameraTargetX">
             <sp-label slot="label">注視点X</sp-label>
           </sp-textfield>
-          <sp-textfield value="1.5" type="number" id="cameraTargetY">
+          <sp-textfield value="1.5" type="text" id="cameraTargetY">
             <sp-label slot="label">注視点Y</sp-label>
           </sp-textfield>
-          <sp-textfield value="10.0" type="number" id="cameraTargetZ">
+          <sp-textfield value="10.0" type="text" id="cameraTargetZ">
             <sp-label slot="label">注視点Z</sp-label>
           </sp-textfield>
         </div>
@@ -243,7 +244,7 @@
           <sp-textfield value="0.0" type="number" id="cameraRotZ">
             <sp-label slot="label">カメラの傾き</sp-label>
           </sp-textfield>
-          <sp-textfield value="40.0" type="number" id="cameraFOV">
+          <sp-textfield value="40.0" type="text" id="cameraFOV">
             <sp-label slot="label">カメラの画角(水平視野角)</sp-label>
           </sp-textfield>
         </div>
@@ -262,10 +263,10 @@
           </sp-field-group>
 
           <div class="verticalGroup">
-            <sp-slider min="-1" max="1" step="0.01" value="0">
+            <sp-slider min="-1" max="1" step="0.01" value="0" id="sliderOffsetX">
               <sp-label slot="label">X方向</sp-label>
             </sp-slider>
-            <sp-slider min="-1" max="1" step="0.01" value="0">
+            <sp-slider min="-1" max="1" step="0.01" value="0" id="sliderOffsetY">
               <sp-label slot="label">Y方向</sp-label>
             </sp-slider>
             <sp-button id="btnResetOffset" variant="primary">既定値に戻す</sp-button>
@@ -284,7 +285,7 @@
             <sp-button id="btnUpdateCameraPath" variant="primary">
               パスの一覧更新
             </sp-button>
-            <sp-button id="calcCamera">カメラ座標逆算</sp-button>
+            <sp-button id="btnCalcCamera">カメラ座標逆算</sp-button>
 
           </sp-field-group>
         </div>
@@ -319,6 +320,7 @@
         </sp-menu>
       </div>
       <sp-button id="updateTargetPaths">対象の更新</sp-button>
+      <sp-button id="btnTransform">変形</sp-button>
     </div>
     <div class="sp-tab-page" id="primitives-tab-page">
       <div id="parent">

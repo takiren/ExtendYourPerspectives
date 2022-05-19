@@ -79,10 +79,9 @@ class Poly {
   }
 
   TransformOverride(mx) {
-    const v = []
     for (const key in this.verts) {
       if (Object.hasOwnProperty.call(this.verts, key)) {
-        this.verts[key] = Matrix.multiply(mx, element)
+        this.verts[key] = Matrix.multiply(mx, this.verts[key])
       }
     }
   }

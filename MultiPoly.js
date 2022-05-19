@@ -14,11 +14,19 @@ class MultiPoly {
     this.loc=Matrix.makeTranslation(0,0,0)
   }
 
+  setScale(scale){
+    this.scl=scale
+  }
+
   addPoly(poly) {
     this.polys.push(poly);
   }
   
-  static createMultiPolyFromPath(pathItem) {
+  static createMultiPolyFromPath(pathItem,scalar) {
+    if(!scalar){
+      console.error("Scalarを入れてください．")
+      return
+    }
     const mp = new MultiPoly();
     for (let index = 0; index < pathItem.subPathItems.length; index++) {
       const p = new Poly();
@@ -27,9 +35,9 @@ class MultiPoly {
         const point = subPaths.pathPoints[indexj];
         const vert = new Matrix(4, 1);
         vert.elements = [
-          point.anchor[0],
+          point.anchor[0]*scalar,
           0,
-          point.anchor[1],
+          point.anchor[1]*scalar,
           1
         ];
         p.addVert(vert);
@@ -37,12 +45,40 @@ class MultiPoly {
       console.log(p);
       mp.addPoly(p);
     }
-    console.log(mp);
+    return mp;
+  }
+
+  static createMultiPolyFromPathWithOffset(pathItem,scalar,offset) {
+    if(!scalar){
+      console.error("Scalarを入れてください．")
+      return
+    }
+    const mp = new MultiPoly();
+    for (let index = 0; index < pathItem.subPathItems.length; index++) {
+      const p = new Poly();
+      const subPaths = pathItem.subPathItems[index];
+      for (let indexj = 0; indexj < subPaths.pathPoints.length; indexj++) {
+        const point = subPaths.pathPoints[indexj];
+        const vert = new Matrix(4, 1);
+        vert.elements = [
+          point.anchor[0]*scalar,
+          0,
+          point.anchor[1]*scalar,
+          1
+        ];
+        p.addVert(vert);
+      }
+      console.log(p);
+      mp.addPoly(p);
+    }
     return mp;
   }
 
   rotateY(radian){
+  }
 
+  getPolys(){
+    return this.polys
   }
 }
 exports.MultiPoly = MultiPoly;

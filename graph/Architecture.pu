@@ -1,9 +1,9 @@
 @startuml Architecture
-
 skinparam {
     monochrome true
     padding 1
 }
+
 class Poly{
     + Point[] verts
     + Point origin
@@ -49,16 +49,26 @@ class Matrix{
 }
 
 class Drawer{
+    + Drawer(app, currentDoc, constants)
+    + void Draw(DrawObject)
 }
 
 class DrawObject{
 }
 
+class DrawObjectElement{
+}
+class MultiPoly{
+}
+
+MultiPoly *-Poly
+World *-- MultiPoly
+
 World *-- Camera
 World *--Poly
 Point -|> Matrix
 Poly *--Point
+DrawObject *-- DrawObjectElement
+DrawObjectElement <- World
 Drawer <- DrawObject
-DrawObject <- World
-
 @enduml

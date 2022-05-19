@@ -22,7 +22,11 @@ class Vector extends Matrix {
             }
         }
     }
-
+    static formedAngle(vec1, vec2) {
+        const vec_dot = Vector.dot(vec1, vec2)
+        const cos_theta = vec_dot / (vec1.getLength() * vec2.getLength())
+        return Math.acos(cos_theta)
+    }
 
     static dot(vec1, vec2) {
         const loopNum = vec1.getRow()

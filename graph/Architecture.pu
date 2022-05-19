@@ -55,7 +55,6 @@ class Drawer{
 
 class DrawObject{
 }
-
 class DrawObjectElement{
 }
 class MultiPoly{
@@ -63,7 +62,6 @@ class MultiPoly{
 
 MultiPoly *-Poly
 World *-- MultiPoly
-
 World *-- Camera
 World *--Poly
 Point -|> Matrix

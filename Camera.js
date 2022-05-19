@@ -1,7 +1,7 @@
 const { Matrix } = require("./Matrix");
 
 class Camera {
-  constructor(CameraPos, TargetPos, w_dis, wvsize, whsize, z_m, zchilda, zmi, c_width, c_height) {
+  constructor(CameraPos, TargetPos, w_dis, wvsize, whsize, z_m, zchilda, zmi, c_width, c_height, shiftX, shiftY) {
     this.location = new Matrix(3, 1);
     this.location.elements = [
       CameraPos[0],
@@ -28,8 +28,8 @@ class Camera {
     this.zMax = z_m;  //最大描画距離
     this.z_dash_min = zchilda;
     this.zMin = zmi; //最小描画距離
-    this.shift_x = 0 //オフセット
-    this.shift_y = 0 //オフセット
+    this.shift_x = shiftX //オフセット
+    this.shift_y = shiftY //オフセット
 
     this.calcAxis();
     this.matrixNormalizer = this.makeNormalize(); //正規化行列
@@ -72,7 +72,7 @@ class Camera {
 
   makeCameraTransform() {
     var mx = new Matrix(4, 4);
-    console.log("カメラ location",this.location)
+    console.log("カメラ location", this.location)
     mx.elements = [
       this.axis[0].getElement(0, 0), this.axis[1].getElement(0, 0), this.axis[2].getElement(0, 0), -Matrix.dot(this.axis[0], this.location),
       this.axis[0].getElement(1, 0), this.axis[1].getElement(1, 0), this.axis[2].getElement(1, 0), -Matrix.dot(this.axis[1], this.location),

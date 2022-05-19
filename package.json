@@ -1,7 +1,7 @@
 {
   "name": "extendyourperspectives",
   "version": "0.0.1",
-  "description": "This starter plugin is a good place to get started when developing for Photoshop. It does not rely on any frameworks or build steps -- hence the name \"Vanilla\".",
+  "description": "正しいパースを極限まで追求するためのプラグインです。というか私がほしかっただけです。",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -1,4 +1,4 @@
-const { Matrix } = require("./Matrix");
+const { Matrix, Point } = require("./Matrix");
 const { Poly } = require("./Poly");
 const { MultiPoly } = require("./MultiPoly")
 const { DrawObject, DrawObjectElements } = require("./DrawObject");
@@ -58,9 +58,13 @@ class World {
       ];
       this.PersepectivePolys.push(Poly.createLine(vert1, vert2));
     }
+
+    for (let index = 0; index < y + 1; index++) {
+      let vert1 = new Point()
+    }
     console.log("パースライン", this.PersepectivePolys);
   }
-  
+
   IsClosed(poly) {
     return poly.IsClosed();
   }
@@ -91,6 +95,7 @@ class World {
   }
 
   getDrawObjectElement(poly) {
+    //Poly -> DrawObjectElement
     const pointsOnScreen = [];
     const verts = poly.getVertsWorld();
     for (const key in verts) {
@@ -100,23 +105,24 @@ class World {
         pointsOnScreen.push([
           pMatrix.getElement(0, 0),
           pMatrix.getElement(1, 0)
-        ]);
+        ])
       }
     }
-    console.log("PolyIsClosed", poly.IsClosed());
+    console.log("PolyIsClosed", poly.IsClosed())
     const IDrawObjectElements = new DrawObjectElements(pointsOnScreen, poly.IsClosed());
 
     return IDrawObjectElements
   }
 
   getDrawObject(poly) {
+    //直接DrawObjectを取得するための関数。　多分いらない
     const IDrawObject = new DrawObject();
-
     IDrawObject.addElement(this.getDrawObjectElement(poly));
     return IDrawObject;
   }
 
   getDrawObjectFromMultiPoly(multipoly) {
+    //直接DrawObjectを取得するための関数。　多分いらない
     const IDrawObject = new DrawObject();
     const IMultiPoly = multipoly.getPolys();
 
@@ -146,30 +152,15 @@ class World {
 
   getDrawObjectPerse() {
     const IDrawObject = new DrawObject();
+
     for (const key in this.PersepectivePolys) {
       if (Object.hasOwnProperty.call(this.PersepectivePolys, key)) {
-        const element = this.PersepectivePolys[key];
-        console.table("パース", element);
-        const startp = this.instanceCam.ProjectToScreen(element.verts[0]);
-        const endp = this.instanceCam.ProjectToScreen(element.verts[1]);
-
-        const s_p = [
-          startp.getElement(0, 0),
-          startp.getElement(1, 0)
-        ];
-        const e_p = [
-          endp.getElement(0, 0),
-          endp.getElement(1, 0)
-        ];
-
-        IDrawObject.addElement(
-          new DrawObjectElements([s_p, e_p], false)
-        );
-
+        const poly = this.PersepectivePolys[key];
+        IDrawObject.addElement(this.getDrawObjectElement(poly))
       }
     }
 
-    return IDrawObject;
+    return IDrawObject
   }
 
 }

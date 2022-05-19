@@ -15,7 +15,7 @@ class Poly {
     }
     this.verts = [];
     this.rotY = Matrix.makeRotationY(0)
-    this.bClosed = true
+    this.bClosed = false
     this.scale = Matrix.makeScale(1, 1, 1)
   }
 
@@ -51,7 +51,7 @@ class Poly {
     for (const key in this.verts) {
       if (Object.hasOwnProperty.call(this.verts, key)) {
         const element = this.verts[key];
-        v.push(Matrix.multiply(mx,))
+        v.push(Matrix.multiply(mx))
       }
     }
   }
@@ -118,30 +118,5 @@ class Poly {
     return p;
   }
 
-  static createPoly(...args) {
-    for (const key in arguments) {
-      if (Object.hasOwnProperty.call(arguments, key)) {
-        const element = arguments[key];
-        poly_ins = new Poly()
-        poly_ins.verts.push(element);
-      }
-    }
-    return poly_ins
-  }
-
-  static addPerspectives() {
-  }
-
-  static createPolyFromPath(pathItem) {
-    for (const key in pathItem) {
-      if (Object.hasOwnProperty.call(pathItem, key)) {
-        const element = pathItem[key];
-        console.log(element);
-      }
-    }
-  }
-  static createPlane() {
-    console.error("This F does nothing.")
-  }
 }
 exports.Poly = Poly;

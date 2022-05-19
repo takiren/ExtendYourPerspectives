@@ -250,17 +250,7 @@
         </div>
 
         <div>
-          <sp-field-label for="offsetGroup">オフセット</sp-field-label>
-          <sp-field-group id="offsetGroup">
-
-            <sp-textfield value="0.0">
-              <sp-label slot="label">X</sp-label>
-            </sp-textfield>
-
-            <sp-textfield value="0.0">
-              <sp-label slot="label">Y</sp-label>
-            </sp-textfield>
-          </sp-field-group>
+          <sp-detail>オフセット</sp-detail>
 
           <div class="verticalGroup">
             <sp-slider min="-1" max="1" step="0.01" value="0" id="sliderOffsetX">
@@ -304,8 +294,7 @@
             <sp-label slot="label">パースラインの数Z</sp-label>
           </sp-textfield>
         </sp-field-group>
-        <sp-button id="btnGo">Go</sp-button>
-        <sp-button id="btnReset" variant="primary">Reset</sp-button>
+        <sp-button id="btnGo">パース描画</sp-button>
 
       </div>
     </div>
@@ -349,14 +338,13 @@
           <div class="group">
             <sp-label>設定</sp-label>
             <div>
-
-              <sp-textfield type="number" value="0">
+              <sp-textfield type="number" value="0" id="primitivePosX">
                 <sp-label slot="label">X座標</sp-label>
               </sp-textfield>
-              <sp-textfield type="number" value="0">
+              <sp-textfield type="number" value="0" id="primitivePosY">
                 <sp-label slot="label">Y座標</sp-label>
               </sp-textfield>
-              <sp-textfield type="number" value="0">
+              <sp-textfield type="number" value="0" id="primitivePosZ">
                 <sp-label slot="label">Z座標</sp-label>
               </sp-textfield>
             </div>
@@ -374,7 +362,7 @@
               <sp-slider min="-180" max="180" step="1" value="0">
                 <sp-label slot="label">X軸の回転</sp-label>
               </sp-slider>
-              <sp-slider min="-180" max="180" step="1" value="0">
+              <sp-slider min="-180" max="180" step="1" value="0" id="primitiveRotY">
                 <sp-label slot="label">Y軸の回転</sp-label>
               </sp-slider>
               <sp-slider min="-180" max="180" step="1" value="0">

@@ -26,7 +26,6 @@ Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
     });
   }
 });
-
 let app = window.require('photoshop').app;
 let constants = window.require("photoshop").constants;
 let currentDoc;
@@ -86,7 +85,22 @@ function createScene() {
     Number(document.getElementById("cameraTargetY").value),
     Number(document.getElementById("cameraTargetZ").value)
   ]
-  return new World(new Camera(c_pos, t_pos, window_distance, window_v_size, window_h_size, z_max, z_c_min, z_min, canvas_width, canvas_height));
+
+  console.log("オフセットX", Number(document.getElementById("sliderOffsetX").value))
+  return new World(
+    new Camera(
+      c_pos,
+      t_pos,
+      window_distance,
+      window_v_size,
+      window_h_size,
+      z_max, z_c_min,
+      z_min,
+      canvas_width,
+      canvas_height,
+      Number(document.getElementById("sliderOffsetX").value),
+      Number(document.getElementById("sliderOffsetY").value))
+  );
 }
 
 function InitCanvas() {
@@ -164,11 +178,11 @@ function updateTextCamPath() {
 }
 
 async function drawPerspective() {
-  await require('photoshop').core.executeAsModal(dFunc, { "commandName": "Test command" });
+  await require('photoshop').core.executeAsModal(DoDrawPerspective, { "commandName": "Test command" });
 }
 
 
-async function dFunc(executionControl) {
+async function DoDrawPerspective(executionControl) {
   Init()
   let hostControl = executionControl.hostControl;
 
@@ -283,15 +297,31 @@ async function DoPrimitiveDraw(executionControl) {
   const renderer = new Drawer(app, currentDoc, constants) //Drawerをrendererでインスタンス化．
   const Tprimitive = document.getElementById("menuPrimitives").value
 
+  const location = Matrix.makeVert(
+    Number(document.getElementById("primitivePosX").value),
+    Number(document.getElementById("primitivePosY").value),
+    Number(document.getElementById("primitivePosZ").value)
+  )
+  const rotation = Matrix.makeRotationY(
+    Number(document.getElementById("primitiveRotY").value)
+  )
+
   switch (Tprimitive) {
     case 'plane':
       const IPrimitive = new PrimitivePlane(
-        Matrix.makeVert(0, 0, 0),
+        Matrix.makeVert(
+          Number(document.getElementById("primitivePosX").value),
+          Number(document.getElementById("primitivePosY").value),
+          Number(document.getElementById("primitivePosZ").value)
+        ),
         Matrix.makeScale(1, 1, 1),
-        Matrix.makeRotationY(0)
+        Matrix.makeRotationY(
+          ang_to_rad(Number(document.getElementById("primitiveRotY").value))
+        )
       )
       console.table(wld.getDrawObject(IPrimitive.poly))
-      await renderer.draw(wld.getDrawObject(IPrimitive.poly))
+      wld.addPoly(IPrimitive.poly)
+      await renderer.draw(wld.getDrawObjectFromWorld())
       break;
 
     case 'box':
@@ -310,21 +340,11 @@ async function DoPrimitiveDraw(executionControl) {
 function testFunction() {
   //使い道はない。関数が正しく動くかを試すために雑に使っている。
   Init()
-  const path = currentDoc.pathItems.getByName("mptest")
-  console.log(MultiPoly.createMultiPolyFromPath(path, 1 / normalLength))
-  const v1 = new Vector2()
-  const v2 = new Vector2()
-  v1.elements = [
-    4,
-    3
-  ]
-  v2.elements = [
-    4,
-    -3
-  ]
-  console.log(Vector.bisector(v1, v2))
-
-  console.log("内積", Matrix.dot(v1, v2))
+  console.log(Matrix.makeVert(
+    Number(document.getElementById("primitivePosX").value),
+    Number(document.getElementById("primitivePosY").value),
+    Number(document.getElementById("primitivePosZ").value)
+  ))
 }
 
 function calcCamera() {
@@ -412,7 +432,7 @@ document.getElementById("menuTargets").addEventListener("dblclick", addPath)
 document.getElementById("updateNormal").addEventListener("click", updateNormalPathPicker)
 document.getElementById("pickerNormalLength").addEventListener("change", updateNormalText)
 document.getElementById("btnGeneratePrimitive").addEventListener("click", generatePrimitive)
-document.getElementById("btnReset").addEventListener("click", testFunction)
+
 document.getElementById("btnCalcCamera").addEventListener("click", calcCamera)
 document.getElementById("btnResetOffset").addEventListener("click", offsetReset)
 document.getElementById("btnTransform").addEventListener("click", transform)

@@ -20,6 +20,7 @@ class World {
   }
 
   createPerse(x, y, z) {
+    //パースライン生成
     for (let index = 0; index < z + 1; index++) {
       let vert1 = new Matrix(4, 1);
       let vert2 = new Matrix(4, 1);
@@ -59,21 +60,7 @@ class World {
     }
     console.log("パースライン", this.PersepectivePolys);
   }
-
-  getScreenLocs(poly) {
-    const v_scr = [];
-    const verts = poly.getVertsWorld();
-    console.table("頂点座標", v_scr);
-    for (const key in verts) {
-      if (Object.hasOwnProperty.call(verts, key)) {
-        const element = verts[key];
-        v_scr.push(this.instanceCam.ProjectToScreen(element));
-      }
-    }
-
-    return v_scr;
-  }
-
+  
   IsClosed(poly) {
     return poly.IsClosed();
   }
@@ -181,25 +168,6 @@ class World {
 
       }
     }
-
-    return IDrawObject;
-  }
-
-  getScreenLocations(poly) {
-    const pointsOnScreen = [];
-    const verts = poly.getVertsWorld();
-    for (const key in verts) {
-      if (Object.hasOwnProperty.call(verts, key)) {
-        const element = verts[key];
-        const pMatrix = this.instanceCam.ProjectToScreen(element);
-        pointsOnScreen.push([
-          pMatrix.getElement(0, 0),
-          pMatrix.getElement(1, 0)
-        ]);
-      }
-    }
-
-    const IDrawObject = new DrawObject(pointsOnScreen, poly.IsClosed());
 
     return IDrawObject;
   }

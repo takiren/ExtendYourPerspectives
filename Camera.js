@@ -22,24 +22,25 @@ class Camera {
 
     this.axis = [new Matrix(3, 1), new Matrix(3, 1), new Matrix(3, 1)];
 
-    this.w_distance = w_dis;
-    this.w_hSize = whsize;
-    this.w_vSize = wvsize;
-    this.zMax = z_m;
+    this.w_distance = w_dis; //投影面までの距離
+    this.w_hSize = whsize;  //投影面の縦サイズ
+    this.w_vSize = wvsize;  //投影面の横サイズ
+    this.zMax = z_m;  //最大描画距離
     this.z_dash_min = zchilda;
-    this.zMin = zmi;
-    this.shift_x = 0
-    this.shift_y = 0
+    this.zMin = zmi; //最小描画距離
+    this.shift_x = 0 //オフセット
+    this.shift_y = 0 //オフセット
 
     this.calcAxis();
-    this.mn = this.makeNormalize();
-    this.mt = this.makeCameraTransform();
-    this.mp = this.makeProjection();
-    this.mx_ViewToScr = this.makeViewToScr();
+    this.matrixNormalizer = this.makeNormalize(); //正規化行列
+    this.matrixCameraTransformer = this.makeCameraTransform(); //カメラ座標系変換行列
+    this.matrixProjector = this.makeProjection(); //プロジェクション行列
+    this.mx_ViewToScr = this.makeViewToScr(); //スクリーン座標変換行列
     this.scaleI = Matrix.makeScale(1, 1, 1);
   }
 
   calcTargetVec() {
+    //注視点へのベクトル。
     var vec = new Matrix(3, 1);
     console.log("TargetLoc", this.targetLoc, "Inverted", Matrix.Invert(this.location));
     vec = Matrix.add(this.targetLoc, Matrix.Invert(this.location));
@@ -50,6 +51,10 @@ class Camera {
   }
 
   calcAxis() {
+    //カメラの軸計算
+    //axis[0]がカメラ座標系でのx軸
+    //axis[1]がカメラ座標系でのy軸
+    //axis[2]がカメラ座標系でのz軸
     this.axis[2] = this.calcTargetVec();
     this.axis[1].elements = [
       0,
@@ -69,12 +74,6 @@ class Camera {
     var mx = new Matrix(4, 4);
     console.log("カメラ location",this.location)
     mx.elements = [
-      this.axis[0].getElement(0, 0), this.axis[0].getElement(0, 1), this.axis[0].getElement(0, 2), -Matrix.dot(this.axis[0], this.location),
-      this.axis[1].getElement(0, 0), this.axis[1].getElement(0, 1), this.axis[1].getElement(0, 2), -Matrix.dot(this.axis[1], this.location),
-      this.axis[2].getElement(0, 0), this.axis[2].getElement(0, 1), this.axis[2].getElement(0, 2), -Matrix.dot(this.axis[2], this.location),
-      0, 0, 0, 1
-    ];
-    mx.elements = [
       this.axis[0].getElement(0, 0), this.axis[1].getElement(0, 0), this.axis[2].getElement(0, 0), -Matrix.dot(this.axis[0], this.location),
       this.axis[0].getElement(1, 0), this.axis[1].getElement(1, 0), this.axis[2].getElement(1, 0), -Matrix.dot(this.axis[1], this.location),
       this.axis[0].getElement(2, 0), this.axis[1].getElement(2, 0), this.axis[2].getElement(2, 0), -Matrix.dot(this.axis[2], this.location),
@@ -91,7 +90,6 @@ class Camera {
       0, 0, 1, 0,
       0, 0, 0, 1
     ];
-    console.table("ターブル", mx);
     return mx;
   }
 
@@ -111,21 +109,24 @@ class Camera {
   }
 
   Project(vert) {
+    //ビューポート変換
     vert = Matrix.multiply(this.scaleI, vert);
-    vert = Matrix.multiply(this.mt, vert);
-    vert = Matrix.multiply(this.mn, vert);
-    vert = Matrix.multiply(this.mp, vert);
+    vert = Matrix.multiply(this.matrixCameraTransformer, vert);
+    vert = Matrix.multiply(this.matrixNormalizer, vert);
+    vert = Matrix.multiply(this.matrixProjector, vert);
     vert = Matrix.multiplyByScalar(1 / vert.getElement(3, 0), vert);
     return vert;
   }
 
   ProjectToScreen(vert) {
+    //スクリーン座標変換
     vert = this.Project(vert);
     console.log("変換テスト", Matrix.multiply(this.mx_ViewToScr, vert));
     return Matrix.multiply(this.mx_ViewToScr, vert);
   }
 
   setShift(x, y) {
+    //オフセット定義
     this.shift_x = x
     this.shift_y = y
     this.mx_ViewToScr = this.makeViewToScr();

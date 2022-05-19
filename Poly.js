@@ -79,6 +79,7 @@ class Poly {
   }
 
   TransformOverride(mx) {
+    //元のデータを書き換え
     for (const key in this.verts) {
       if (Object.hasOwnProperty.call(this.verts, key)) {
         this.verts[key] = Matrix.multiply(mx, this.verts[key])
@@ -87,7 +88,8 @@ class Poly {
   }
 
 
-  rotateYOverride(radian) {
+  RotateYOverride(radian) {
+    //元のデータを書き換え
     let mx_rot = Matrix.makeRotationY(radian)
 
     for (const key in this.verts) {
@@ -98,6 +100,7 @@ class Poly {
   }
 
   getVertsWorld() {
+    //ワールド座標系で取得
     const worldVerts = []
     for (const key in this.verts) {
       if (Object.hasOwnProperty.call(this.verts, key)) {

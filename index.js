@@ -201,6 +201,7 @@ async function dFunc(executionControl) {
 }
 
 function addPathsToPicker(targetPickerName, subPathNum, pointsNum) {
+  //条件に沿ったパスをtargePickerNameにアイテムとして登録
   if (!Init()) {
     console.alert("Initialize Failed")
     return;
@@ -233,10 +234,8 @@ function updateNormalPathPicker() {
   addPathsToPicker("menuNormalLength", 1, 2)
 }
 
-function updateSelectionNormal() {
-}
-
 function updateNormalText() {
+  //1mを何ピクセルとするかを決定。
   const element = document.getElementById("pickerNormalLength")
   if (!element.value) {
     return
@@ -251,20 +250,20 @@ function updateNormalText() {
 }
 
 function pathLength(a, b) {
+  //2点間の距離を計算
   const x = a.anchor[0] - b.anchor[0]
   const y = a.anchor[1] - b.anchor[1]
   const length = Math.sqrt(x ** 2 + y ** 2)
   return length
 }
 
-
-
-
 async function generatePrimitive() {
+  //プリミティブを描画
   await require('photoshop').core.executeAsModal(DoPrimitiveDraw, { "commandName": "Test command" });
 }
 
 async function DoPrimitiveDraw(executionControl) {
+  //プリミティブを描画
   Init()
   let hostControl = executionControl.hostControl;
 
@@ -309,6 +308,7 @@ async function DoPrimitiveDraw(executionControl) {
 }
 
 function testFunction() {
+  //使い道はない。関数が正しく動くかを試すために雑に使っている。
   Init()
   const path = currentDoc.pathItems.getByName("mptest")
   console.log(MultiPoly.createMultiPolyFromPath(path, 1 / normalLength))
@@ -322,12 +322,13 @@ function testFunction() {
     4,
     -3
   ]
-  console.log(Vector.bisector2(v1, v2))
+  console.log(Vector.bisector(v1, v2))
 
   console.log("内積", Matrix.dot(v1, v2))
 }
 
 function calcCamera() {
+  //指定したパスから画角、カメラ位置、注視点を算出する関数。
   const element = document.getElementById("pickerCamerapath")
   if (!element.value) {
     console.error("カメラパスが指定されていません")
@@ -356,7 +357,7 @@ function calcCamera() {
     camPath.pathPoints[1].anchor[0] / normalLength,
     camPath.pathPoints[1].anchor[1] / normalLength
   ]
-  const tagetVector = Vector.bisector2(v1, v2)
+  const tagetVector = Vector.bisector(v1, v2)
   console.log(tagetVector)
   const targetLoc = Vector.add(tagetVector, camLoc)
   console.log("注視点", targetLoc)
@@ -399,10 +400,6 @@ async function DoTransform(executionControl) {
   console.log(Idobj)
   await renderer.draw(Idobj)
   await hostControl.resumeHistory(suspensionID)
-}
-
-async function cameraTest() {
-  await require('photoshop').core.executeAsModal(doCameraTest, { "commandName": "CameraTest" })
 }
 
 //イベント登録用

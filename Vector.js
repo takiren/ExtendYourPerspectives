@@ -1,6 +1,7 @@
 const { Matrix } = require("./Matrix")
 
 class Vector extends Matrix {
+    //行列クラスを利用したベクトルクラス。
     constructor(n) {
         super(n, 1)
     }
@@ -37,35 +38,11 @@ class Vector extends Matrix {
         return nDot
     }
 
-    static formedAngle(vec1, vec2) {
-        const vec_dot = Vector.dot(vec1, vec2)
-        const cos_theta = vec_dot / (vec1.getLength() * vec2.getLength())
-        return Math.acos(cos_theta)
-    }
-
     static bisector(vec1, vec2) {
-
-        const v1 = Matrix.multiplyByScalar(vec2.getLength(), vec1)
-        const v2 = Matrix.multiplyByScalar(vec1.getLength(), vec2)
-        const upper = Vector.add(v1, v2)
-        console.log("分子", upper)
-        const lower = vec1.getLength() + vec2.getLength()
-        return Matrix.multiplyByScalar(1 / lower, upper)
-    }
-
-    static bisector2(vec1, vec2) {
+        //2つのベクトルのなす角の二等分線を返す
         const v1 = Matrix.multiplyByScalar(1 / vec1.getLength(), vec1)
         const v2 = Matrix.multiplyByScalar(1 / vec2.getLength(), vec2)
-
         return Vector.add(v1, v2)
-    }
-
-    static add2(vec1, vec2) {
-        const vec = new Vector(vec1.getRow());
-        for (let m = 0; m < mat.getRow(); m++) {
-            vec.setElement(m, 0, vec1.getElement(m, 0) + vec2.getElement(m, 0))
-        }
-        return vec;
     }
 }
 

@@ -22,6 +22,12 @@ class MultiPoly {
     this.polys.push(poly);
   }
   
+  rotateY(radian){
+  }
+
+  getPolys(){
+    return this.polys
+  }
   static createMultiPolyFromPath(pathItem,scalar) {
     if(!scalar){
       console.error("Scalarを入れてください．")
@@ -74,11 +80,6 @@ class MultiPoly {
     return mp;
   }
 
-  rotateY(radian){
-  }
-
-  getPolys(){
-    return this.polys
-  }
+  
 }
 exports.MultiPoly = MultiPoly;

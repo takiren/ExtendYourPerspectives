@@ -1,5 +1,4 @@
 const { Matrix, Point } = require("./Matrix");
-const { Vector3, Vector4, Matrix4, Quaternion } = require('./matrixgl.min.js');
 class Poly {
   constructor() {
     this.origin = new Point()

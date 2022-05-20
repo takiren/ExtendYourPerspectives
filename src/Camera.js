@@ -2,6 +2,7 @@ const { Matrix } = require("./Matrix");
 
 class Camera {
   constructor(CameraPos, TargetPos, w_dis, wvsize, whsize, z_m, zchilda, zmi, c_width, c_height, shiftX, shiftY) {
+    //視点
     this.location = new Matrix(3, 1);
     this.location.elements = [
       CameraPos[0],
@@ -10,6 +11,8 @@ class Camera {
     ];
 
     console.log("カメラ座標", this.location);
+    
+    //注視点
     this.targetLoc = new Matrix(3, 1);
     this.targetLoc.elements = [
       TargetPos[0],
@@ -17,9 +20,12 @@ class Camera {
       TargetPos[2]
     ];
 
+    //ドキュメントのサイズ定義
+
     this.canv_width = c_width;
     this.canv_height = c_height;
 
+    //カメラ座標系での軸
     this.axis = [new Matrix(3, 1), new Matrix(3, 1), new Matrix(3, 1)];
 
     this.w_distance = w_dis; //投影面までの距離
@@ -36,7 +42,6 @@ class Camera {
     this.matrixCameraTransformer = this.makeCameraTransform(); //カメラ座標系変換行列
     this.matrixProjector = this.makeProjection(); //プロジェクション行列
     this.mx_ViewToScr = this.makeViewToScr(); //スクリーン座標変換行列
-    this.scaleI = Matrix.makeScale(1, 1, 1);
   }
 
   calcTargetVec() {
@@ -71,6 +76,7 @@ class Camera {
   }
 
   makeCameraTransform() {
+    //カメラ座標系変換行列
     var mx = new Matrix(4, 4);
     console.log("カメラ location", this.location)
     mx.elements = [
@@ -83,6 +89,7 @@ class Camera {
   }
 
   makeViewToScr() {
+    //スクリーン座標変換行列
     let mx = new Matrix(4, 4);
     mx.elements = [
       this.canv_width / 2, 0, 0, this.canv_width / 2 + this.canv_width * this.shift_x,
@@ -94,10 +101,12 @@ class Camera {
   }
 
   makeNormalize() {
+    //カメラ座標系を正規化する。
     return Matrix.makeScale(this.w_distance / (this.zMax * this.w_hSize), this.w_distance / (this.w_vSize * this.zMax), 1 / this.zMax);
   }
 
   makeProjection() {
+    //透視投影変換行列
     var mx_P = new Matrix(4, 4);
     mx_P.elements = [
       1, 0, 0, 0,
@@ -110,7 +119,6 @@ class Camera {
 
   Project(vert) {
     //ビューポート変換
-    vert = Matrix.multiply(this.scaleI, vert);
     vert = Matrix.multiply(this.matrixCameraTransformer, vert);
     vert = Matrix.multiply(this.matrixNormalizer, vert);
     vert = Matrix.multiply(this.matrixProjector, vert);
@@ -120,6 +128,7 @@ class Camera {
 
   ProjectToScreen(vert) {
     //スクリーン座標変換
+    //ビューポート座標系からスクリーン座標系へ。
     vert = this.Project(vert);
     console.log("変換テスト", Matrix.multiply(this.mx_ViewToScr, vert));
     return Matrix.multiply(this.mx_ViewToScr, vert);

@@ -6,7 +6,7 @@ class Vector extends Matrix {
     constructor(n) {
         super(n, 1)
     }
-
+    //長さを取得
     getLength() {
         const loopNum = this.getRow()
         let length = 0
@@ -23,12 +23,14 @@ class Vector extends Matrix {
             }
         }
     }
+    //2辺の角度を計算。
     static formedAngle(vec1, vec2) {
         const vec_dot = Vector.dot(vec1, vec2)
         const cos_theta = vec_dot / (vec1.getLength() * vec2.getLength())
         return Math.acos(cos_theta)
     }
 
+    //内積の計算
     static dot(vec1, vec2) {
         const loopNum = vec1.getRow()
         if (loopNum != vec2.getRow()) {
@@ -43,8 +45,8 @@ class Vector extends Matrix {
         return nDot
     }
 
+    //2つのベクトルのなす角の二等分線を返す
     static bisector(vec1, vec2) {
-        //2つのベクトルのなす角の二等分線を返す
         const v1 = Matrix.multiplyByScalar(1 / vec1.getLength(), vec1)
         const v2 = Matrix.multiplyByScalar(1 / vec2.getLength(), vec2)
         return Vector.add(v1, v2)

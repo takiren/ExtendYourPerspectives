@@ -1,7 +1,7 @@
-const { Matrix, Point } = require("./src/Matrix");
-const { Poly } = require("./src/Poly");
-const { MultiPoly } = require("./src/MultiPoly")
-const { DrawObject, DrawObjectElements } = require("./src/DrawObject");
+const { Matrix, Point } = require("/src/Matrix");
+const { Poly } = require("/src/Poly");
+const { MultiPoly } = require("/src/MultiPoly")
+const { DrawObject, DrawObjectElements } = require("/src/DrawObject");
 
 class World {
   constructor(CameraInstance) {
@@ -11,7 +11,7 @@ class World {
     console.log("World Initialized");
     this.PersepectivePolys = [];
   }
-
+  
   addPoly(p) {
     this.polys.push(p)
   }

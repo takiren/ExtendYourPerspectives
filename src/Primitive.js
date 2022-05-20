@@ -1,6 +1,6 @@
-const { Matrix, Point } = require("./src/Matrix");
-const { MultiPoly } = require("./src/MultiPoly");
-const { Poly } = require("./src/Poly");
+const { Matrix, Point } = require("/src/Matrix");
+const { MultiPoly } = require("/src/MultiPoly");
+const { Poly } = require("/src/Poly");
 
 class PrimitiveBase {
     constructor(OriginMatrix, ScaleMatrix, RotationMatrix) {

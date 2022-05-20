@@ -1,11 +1,11 @@
 
-const { Matrix, Point } = require("./src/Matrix");
-const { Camera } = require("./src/Camera");
-const { MultiPoly } = require("./src/MultiPoly");
-const { PrimitivePlane } = require("./src/Primitive");
-const { Drawer } = require("./src/Drawer");
-const { World } = require("./src/World");
-const { Vector, Vector2, Vector3 } = require("./src/Vector")
+const { Matrix, Point } = require("/src/Matrix");
+const { Camera } = require("/src/Camera");
+const { MultiPoly } = require("/src/MultiPoly");
+const { PrimitivePlane } = require("/src/Primitive");
+const { Drawer } = require("/src/Drawer");
+const { World } = require("/src/World");
+const { Vector, Vector2, Vector3 } = require("/src/Vector")
 Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
   theTab.onclick = () => {
     localStorage.setItem("currentTab", theTab.getAttribute("id"));

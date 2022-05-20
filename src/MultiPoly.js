@@ -1,5 +1,5 @@
-const { Matrix, Point } = require("./src/Matrix");
-const { Poly } = require("./src/Poly");
+const { Matrix, Point } = require("/src/Matrix");
+const { Poly } = require("/src/Poly");
 
 class MultiPoly {
   constructor() {

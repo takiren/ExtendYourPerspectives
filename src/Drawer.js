@@ -1,5 +1,5 @@
-const { Matrix, Point } = require("./src/Matrix");
-const { DrawObject, DrawObjectElements } = require("./src/DrawObject")
+const { Matrix, Point } = require("/src/Matrix");
+const { DrawObject, DrawObjectElements } = require("/src/DrawObject")
 
 class Drawer {
     constructor(app, currentDoc, constants) {

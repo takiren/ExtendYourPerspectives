@@ -33,9 +33,10 @@ VSCodeでの閲覧推奨です。
 
 ## 使い方
 ### パースライン描画(グリッド描画)
-<img src="documentation\graph\homepanel.png" width="50%">
 
 1. 視点と注視点、画角を設定する。
+
+    <img src="documentation\graph\homepanel.png" width="50%">
 2. **パースライン設定**から引く本数を指定する。
 3. パース描画をクリック。
 
@@ -70,11 +71,10 @@ VSCodeでの閲覧推奨です。
 ## クラス図
 ![クラス図](out\graph\Architecture.png "クラス図")
 
-使用しているコードはすべて **/src**にあります。
+使用しているコードはすべて **/src**にある。
 
-基本的にクラスごとでファイル分けしています。
-
-CameraクラスはCamera.js、WorldクラスはWorld.jsに記述されてます。
+基本的にクラスごとでファイル分けしている。
+例　:CameraクラスはCamera.js、WorldクラスはWorld.jsに記述されている。
 ## 各クラス解説
 ### Worldクラス
 このクラスにカメラやPolyなど登録する。
@@ -115,23 +115,24 @@ CameraクラスはCamera.js、WorldクラスはWorld.jsに記述されてます�
 
 クラスには命名規則を設けているがそれ以外はまだ設計が固まっていないため規則がありません。
 
-特に**index.js**
->### 変数
-* 型を最初につける。先頭は必ず小文字。
-* インスタンスは接頭辞大文字の**I**を使う。
-* boolの場合は接頭辞bを使う。
+特に**index.js**。
+* 変数
+    * 型を最初につける。先頭は必ず小文字。
+    * インスタンスは接頭辞大文字の**I**を使う。
+    * boolの場合は接頭辞bを使う。
 
->### 関数
-基本的に以下に習う。ぱっと見でわかるような名前にする
-* 基本的に最初は小文字。
-* 値を返す場合はgetをつける。
-* 代入する場合はsetをつける。
-* boolを返す場合はIs***()の形式で書く。
++ 関数
+
+    基本的に以下に習う。ぱっと見でわかるような名前にする
+    * 基本的に最初は小文字。
+    * 値を返す場合はgetをつける。
+    * 代入する場合はsetをつける。
+    * boolを返す場合はIs***()の形式で書く。
     #### 例
     * Poly.IsClosed() Polyが閉じているか開いているかを返す。
     * DrawObjectElements.IsClosed() DrawObjectElementsが閉じているか開いているかを返す。
-* なにかの計算(操作)が発生する場合(行列の計算など)はその計算(操作)を表す動詞をつける。
-    #### 例
-    * Matrix.multiply() 行列の掛け算(translate)を行うためmultiplyをつける。
-    * Matrix.translate() 行列の平行移動(translate)を行うためtranslate
-* インスタンスの変数を直接書き換える場合は接尾時にOverrideを使う。
+    * なにかの計算(操作)が発生する場合(行列の計算など)はその計算(操作)を表す動詞をつける。
+        #### 例
+        * Matrix.multiply() 行列の掛け算(translate)を行うためmultiplyをつける。
+        * Matrix.translate() 行列の平行移動(translate)を行うためtranslate
+    * インスタンスの変数を直接書き換える場合は接尾時にOverrideを使う。

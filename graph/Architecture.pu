@@ -19,7 +19,8 @@ class Camera{
 
 class World{
     + Camera ICamera
-    + Poly[] MultiPolys
+    + Poly[] Polys
+    + MultiPoly[] MultiPolys
     + Number[][x,y] getScreenLocations(Poly)
 }
 

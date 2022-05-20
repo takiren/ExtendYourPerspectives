@@ -42,7 +42,7 @@ CameraクラスはCamera.js、WorldクラスはWorld.jsに記述されてます�
 ### 描画フロー
 ![描画フロー](out\graph\drawSequence.png "描画フロー")
 
-
+$$M(Projection Matrix)$$
 
 ### 命名規則
 クラスに命名規則は設けているがそれ以外はあまり考えていないため見づらくなっています。

@@ -1,4 +1,4 @@
-const { Matrix } = require("./Matrix");
+const { Matrix } = require("./src/Matrix");
 
 class Camera {
   constructor(CameraPos, TargetPos, w_dis, wvsize, whsize, z_m, zchilda, zmi, c_width, c_height, shiftX, shiftY) {

@@ -1,7 +1,7 @@
-const { Matrix, Point } = require("./Matrix");
-const { Poly } = require("./Poly");
-const { MultiPoly } = require("./MultiPoly")
-const { DrawObject, DrawObjectElements } = require("./DrawObject");
+const { Matrix, Point } = require("./src/Matrix");
+const { Poly } = require("./src/Poly");
+const { MultiPoly } = require("./src/MultiPoly")
+const { DrawObject, DrawObjectElements } = require("./src/DrawObject");
 
 class World {
   constructor(CameraInstance) {

@@ -1,4 +1,4 @@
-const { Matrix, Point } = require("./Matrix");
+const { Matrix, Point } = require("./src/Matrix");
 class Poly {
   constructor() {
     this.origin = new Point()

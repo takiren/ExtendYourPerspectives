@@ -1,4 +1,4 @@
-const { Matrix } = require("./Matrix")
+const { Matrix } = require("./src/Matrix")
 
 class Vector extends Matrix {
     //行列クラスを利用したベクトルクラス。

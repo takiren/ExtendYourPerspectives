@@ -40,6 +40,8 @@ CameraクラスはCamera.js、WorldクラスはWorld.jsに記述されてます�
 頂点の座標変換を行う。
 
 ### 描画フロー
+![描画フロー](out\graph\drawSequence.png "描画フロー")
+
 
 
 ### 命名規則

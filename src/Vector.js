@@ -2,6 +2,7 @@ const { Matrix } = require("./Matrix")
 
 class Vector extends Matrix {
     //行列クラスを利用したベクトルクラス。
+    //4x1のMatrixを使うときに便利そうだから作った。
     constructor(n) {
         super(n, 1)
     }

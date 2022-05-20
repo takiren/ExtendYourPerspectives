@@ -1,6 +1,6 @@
 
 const { Matrix, Point } = require("./src/Matrix");
-const { Camera } = require("./Camera");
+const { Camera } = require("./src/Camera");
 const { MultiPoly } = require("./src/MultiPoly");
 const { PrimitivePlane } = require("./src/Primitive");
 const { Drawer } = require("./src/Drawer");

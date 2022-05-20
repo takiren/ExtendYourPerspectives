@@ -119,10 +119,11 @@ class Camera {
 
   Project(vert) {
     //ビューポート変換
-    vert = Matrix.multiply(this.matrixCameraTransformer, vert);
-    vert = Matrix.multiply(this.matrixNormalizer, vert);
-    vert = Matrix.multiply(this.matrixProjector, vert);
-    vert = Matrix.multiplyByScalar(1 / vert.getElement(3, 0), vert);
+    vert = Matrix.multiply(this.matrixCameraTransformer, vert);// カメラ座標系へ変換
+    vert = Matrix.multiply(this.matrixNormalizer, vert); //カメラ座標系を正規化
+    vert = Matrix.multiply(this.matrixProjector, vert); //透視投影変換
+    //頂点(x,y,z,w)->(x/w, y/w, z/w, 1)へ変換
+    vert = Matrix.multiplyByScalar(1 / vert.getElement(3, 0), vert); 
     return vert;
   }
 

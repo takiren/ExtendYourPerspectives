@@ -30,7 +30,7 @@ class MultiPoly {
   }
   static createMultiPolyFromPath(pathItem, scalar) {
     if (!scalar) {
-      console.error("Scalarを入れてください．")
+      console.error("Scalarを入れてください")
       return
     }
     const mp = new MultiPoly();

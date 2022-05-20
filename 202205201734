@@ -1,0 +1,95 @@
+[33mcommit 1b16f6d88c85ab28ab4ab4619d92ca50831203bb[m[33m ([m[1;36mHEAD -> [m[1;32mDocumentation[m[33m, [m[1;31morigin/work[m[33m, [m[1;31morigin/develop[m[33m, [m[1;31morigin/Documentation[m[33m, [m[1;32mwork[m[33m, [m[1;32mdevelop[m[33m)[m
+Author: takiren <tyorokyuu@gmail.com>
+Date:   Fri May 20 17:09:02 2022 +0900
+
+    ファイル移動
+
+[33mcommit 6a19d415396a95efe1428843a27401687870b949[m
+Author: takiren <tyorokyuu@gmail.com>
+Date:   Fri May 20 12:31:24 2022 +0900
+
+    僅かな変更
+
+[33mcommit 5c61f6eee5bc92ce173d1ee5a12c4edc5bc906c8[m
+Author: takiren <tyorokyuu@gmail.com>
+Date:   Fri May 20 11:44:20 2022 +0900
+
+    primitive 微調整
+
+[33mcommit b9039f7d10a8b44fbba3c2485fc5f934bd3ca3ee[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Fri May 20 10:43:33 2022 +0900
+
+    改行
+
+[33mcommit e016c60a9af980a673a9c8a3495f1f4f4c90542a[m[33m ([m[1;31morigin/test[m[33m, [m[1;31morigin/release[m[33m)[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Fri May 20 10:06:32 2022 +0900
+
+    微調整
+
+[33mcommit 2992fd56de7930246dd96c386b0617a798b8d8cc[m[33m ([m[1;31morigin/Refactoring[m[33m, [m[1;31morigin/PrimitiveUtils[m[33m, [m[1;31morigin/FileSplit[m[33m)[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Thu May 19 23:46:19 2022 +0900
+
+    いい感じにした。
+
+[33mcommit 3dd021f94da4413e55c0227c58bfb20e581dd310[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Thu May 19 18:15:39 2022 +0900
+
+    removed matrix-min-gl
+
+[33mcommit 68ba74ea3ccadfb6e37b320b4fc104bedaf6a30a[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Thu May 19 17:48:07 2022 +0900
+
+    ファイル整理
+
+[33mcommit 5f06744c6f84f5983c19e465392fefc16cd5424f[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Thu May 19 17:38:36 2022 +0900
+
+    コメント付与
+
+[33mcommit 011a0758b981fbfe47500556d627be7260f7d231[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Thu May 19 17:07:45 2022 +0900
+
+    一旦完成
+
+[33mcommit 437defcfafe0f901723432dc65bca66a852af007[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Sat May 14 15:05:23 2022 +0900
+
+    ワールドクラスを別ファイルに．
+
+[33mcommit c6e8ca72631377e0e82743058e19632937f9a4d8[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Sat May 14 12:45:28 2022 +0900
+
+    ファイル分割ほとんど完了
+
+[33mcommit db60d0ef3c9fdbdc54cb67813523a0a8a34ea370[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Sat May 7 10:18:42 2022 +0900
+
+    Poly, MultiPoly分割
+
+[33mcommit 4c78104f926e3b51997983bba521313a9001887b[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Sat May 7 09:33:35 2022 +0900
+
+    カメラを別ファイルに
+
+[33mcommit 638eeabe790e684f6f7b42ea5ede5cdf63ec6969[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Sat May 7 09:23:20 2022 +0900
+
+    first
+
+[33mcommit ec1d65cdf8c89329351fd1546a64e5f4ead6a96c[m[33m ([m[1;31morigin/master[m[33m)[m
+Author: taki <tyorokyuu@gmail.com>
+Date:   Mon Apr 25 11:32:32 2022 +0900
+
+    first

@@ -152,14 +152,12 @@ class World {
 
   getDrawObjectPerse() {
     const IDrawObject = new DrawObject();
-
     for (const key in this.PersepectivePolys) {
       if (Object.hasOwnProperty.call(this.PersepectivePolys, key)) {
         const poly = this.PersepectivePolys[key];
         IDrawObject.addElement(this.getDrawObjectElement(poly))
       }
     }
-
     return IDrawObject
   }
 

@@ -15,9 +15,6 @@ Photoshopでパースの計算を任せるためのプラグインです。
 
 壊れてもいいファイルでご使用ください。
 
-
-
-
 ## 使い方 Usage
 1. ダウンロード&解凍
 2. **Adobe UXP Developer Tool**で**manifest.json**を読み込む

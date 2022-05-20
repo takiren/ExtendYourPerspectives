@@ -1,5 +1,4 @@
 @startuml drawSequence
-title 描画フロー
 Drawer->World: getDrawObject
 World -> Camera : ProjectToScreen
 Camera -->World : Points

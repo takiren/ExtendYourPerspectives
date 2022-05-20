@@ -6,7 +6,6 @@ const { PrimitivePlane } = require("./Primitive");
 const { Drawer } = require("./Drawer");
 const { World } = require("./World");
 const { Vector, Vector2, Vector3 } = require("./Vector")
-
 Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
   theTab.onclick = () => {
     localStorage.setItem("currentTab", theTab.getAttribute("id"));

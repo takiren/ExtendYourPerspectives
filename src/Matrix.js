@@ -297,14 +297,18 @@ class Matrix {
 }
 
 class Point extends Matrix {
-    constructor() {
+    constructor(x,y,z) {
         super(4, 1)
+        if(arguments.length==3){
+            this.elements=[
+                x,
+                y,
+                z,
+                1
+            ]
+        }
     }
 }
 
-
-
-module.exports = {
-    Matrix,
-    Point
-}
+exports.Matrix = Matrix
+exports.Point = Point

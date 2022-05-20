@@ -19,13 +19,13 @@ class World {
     this.multiPolys.push(mp)
   }
 
-  createPerse(x, y, z) {
+  createPerse(NumX, NumY, NumZ) {
     //パースライン生成
-    for (let index = 0; index < z + 1; index++) {
+    for (let index = 0; index < NumZ + 1; index++) {
       let vert1 = new Matrix(4, 1);
       let vert2 = new Matrix(4, 1);
       vert1.elements = [
-        x,
+        NumX,
         0,
         index,
         1
@@ -40,13 +40,13 @@ class World {
       this.PersepectivePolys.push(Poly.createLine(vert1, vert2));
     }
 
-    for (let index = 0; index < x + 1; index++) {
+    for (let index = 0; index < NumX + 1; index++) {
       let vert1 = new Matrix(4, 1);
       let vert2 = new Matrix(4, 1);
       vert1.elements = [
         index,
         0,
-        z,
+        NumZ,
         1
       ];
 
@@ -59,9 +59,18 @@ class World {
       this.PersepectivePolys.push(Poly.createLine(vert1, vert2));
     }
 
-    for (let index = 0; index < y + 1; index++) {
-      let vert1 = new Point()
-    }
+      for (let index = 0; index < NumY + 1; index++) {
+        let vert1 = new Point(0, index, 0)
+        let vert2 = new Point(NumX, index, 0)
+        this.PersepectivePolys.push(Poly.createLine(vert1, vert2))
+      }
+      for (let index = 0; index < NumX + 1; index++) {
+        let vert1 = new Point(index, 0, 0)
+        let vert2 = new Point(index, NumY, 0)
+        this.PersepectivePolys.push(Poly.createLine(vert1, vert2))
+      }
+    
+
     console.log("パースライン", this.PersepectivePolys);
   }
 

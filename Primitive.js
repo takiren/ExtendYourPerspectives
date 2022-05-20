@@ -24,6 +24,8 @@ class PrimitiveBase {
     setScale(matrix){
         this.scl=matrix
     }
+    getPolys(){
+    }
 }
 
 class PrimitivePlane extends PrimitiveBase{
@@ -47,6 +49,14 @@ class PrimitivePlane extends PrimitiveBase{
 }
 
 class PrimitiveBox extends PrimitiveBase{
+    createPoly(){
+        this.poly.verts.push(Matrix.makeVert(0.5,0.5,0))
+        this.poly.verts.push(Matrix.makeVert(-0.5,0.5,0))
+        this.poly.verts.push(Matrix.makeVert(-0.5,-0.5,0))
+        this.poly.verts.push(Matrix.makeVert(0.5,-0.5,0))
+        console.log("平面を作成")
+        this.poly.TransformOverride(this.rot)
+    }
 }
 
 module.exports = {

@@ -1,0 +1,10 @@
+@startuml drawcall
+skinparam {
+    monochrome true
+    padding 1
+}
+start
+:Drawer.draw(World.getDrawObject());
+
+stop
+@enduml

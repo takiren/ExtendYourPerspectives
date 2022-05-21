@@ -4,7 +4,9 @@ Photoshopでパースの計算を任せるためのプラグインです。
 
 一部クラッシュ対策を行っていないため非公開にしています。 
 
-このドキュメント
+このドキュメントは本プラグインの使い方、設計を解説します。
+
+対象はユーザーまたは趣味グラマを想定しています。
 
 ## README.mdについて
 VSCodeでの閲覧推奨です。
@@ -28,8 +30,8 @@ VSCodeでの閲覧推奨です。
 
 ##  技術的理由による制約
 * 技術的理由によりインプットボックスが数値以外も入力できるようになっています。
-これはAdobe UXP APIのバグによるものです。
-* 一部の操作が煩雑になっている(パスの一覧更新ボタンを押さないとドロップダウンメニューを上手く扱えないなど)
+これはAdobe UXP APIのバグ(もしくは仕様)によるものです。
+* 一部の操作が複雑になっている(パスの一覧更新ボタンを押さないとドロップダウンメニューを上手く扱えないなど)
 
 ## インストール
 1. ダウンロード&解凍
@@ -43,7 +45,7 @@ VSCodeでの閲覧推奨です。
 
 1. 視点と注視点、画角を設定する。
 
-    <img src="documentation\graph\homepanel.png" width="50%">
+    <img src="docs\graph\usage\homepanel.png" width="50%">
 2. **パースライン設定**から引く本数を指定する。
 3. パース描画をクリック。
 
@@ -54,38 +56,58 @@ VSCodeでの閲覧推奨です。
 
 1. カメラのパラメータを決めるパス"カメラパス"と平面図となるパス"平面図パス"の2つを用意する。
 
-    <img src="documentation\graph\transformation1.png" width ="90%">
-    <img src="documentation\graph\path list.png" width =90%>
+    <img src="docs\graph\usage\transformation1.png" width ="90%">
+    <img src="docs\graph\usage\path list.png" width =90%>
 
 2. ホームタブのカメラパスグループのパスの一覧更新を押すとカメラパスに使えるパスの一覧がドロップダウンメニューに追加される
 
-    <img src="documentation\graph\homepanel.png" width="50%">
 
 
 3. カメラパスにしたいパスを選択した状態でカメラ座標逆算ボタンを押すと
 カメラパスからカメラの位置が計算され、カメラ設定の値が変化する。
+    <img src="docs\graph\usage\camerapath.png" width="50%">
 
-4. ワールドタブに移動
-5. 平面図パスを選択し変形ボタンを押す。
+1. ワールドタブに移動
+2. 平面図パスを選択し変形ボタンを押す。
 
-    <img src="documentation\graph\paths.png" width="50%">
+    <img src="docs\graph\usage\paths.png" width="50%">
 
-6. 以下のように変形される。
+3. 以下のように変形される。
 
-    <img src="documentation\graph\transformed path.png">
+    <img src="docs\graph\usage\transformed path.png">
 
 # 設計・コードについて
-## クラス図
-![クラス図](out\graph\Architecture.png "クラス図")
 
-使用しているコードはすべて **/src**にある。
+index.htmlからindex.jsを読み込んでいる。
+
+index.htmlはプラグインのGUI部分となるインターフェースとなる。
+
+クラスは機能ごとにクラス分けし、機能拡張しやすいようできるだけ結合が弱くなるように設計した。
+
+一部設計不良と思われるところがあるが、よい解決策を見つけられなかったのでご理解いただきたい。
+## index.js
+このクラスでパネル上エレメントにイベントを登録したり関数を呼び出したりしている。
+
+
+## クラス図
+![クラス図](docs\graph\out\docs\plantuml\Architecture.png "クラス図")
+
+使用しているコードはすべて **src/** にある。
 
 基本的にクラスごとでファイル分けしている。
+
 例　:CameraクラスはCamera.js、WorldクラスはWorld.jsに記述されている。
+
+
 ## 各クラス解説
 ### World
 このクラスにカメラやPolyなど登録する。
+
+右手中指を水平線に並行、人差し指を鉛直上向きにしたとき
+親指、人差し指、中指がそれぞれX、Y、Z軸に対応している。
 **右手座標系。**
+
+Z軸を本来は鉛直上向きにしなければいけないかもしれないが一般ユーザー使う場合奥行きがZ座標にしたほうがわかりやすいかと思いこのようにした。
 
 ### Camera
 頂点の座標変換(World -> Screen)を行う。
@@ -99,14 +121,22 @@ Pointインスタンスを格納する。Pointインスタンスが格納され�
 ### Point
 空間の座標(頂点)を表現するクラス。
 
-4x1のMatrix。Matrixクラスを継承してPointにした。
+4x1のMatrix。Matrixクラスを継承してPointクラスとしている。
 
+### Matrixクラス
+自作行列計算ライブラリ。
 
---------------
+インスタンス化せず呼びたい場合のほうが多いため計算に関する機能はstaticで実装した。
+
+namespaceを使うべきか静的メソッドを使うべきかわからなかったため暫定的に静的メソッドで実装。
+
+Matrixを扱うことはわかっているため静的メソッドのほうがよいのではないかと考えた。
+
 # 処理解説
 
-## 全体のフロー
-1. **index.js** の**Init()** で初期化。PhotoshopAPI、ドキュメント、定数をロード
+## 描画フロー
+
+1. **index.js** の**Init()** で初期化。現在のドキュメントを取得
 2. **Camera**インスタンスを生成
 3. **World**のコンストラクタに**Camera**インスタンスを渡す
 4. **Point**インスタンスを生成
@@ -115,10 +145,9 @@ Pointインスタンスを格納する。Pointインスタンスが格納され�
 7. **World**に**Poly**インスタンスを追加
 8. 描画処理(下記参照)
 
-## 描画処理
+## 描画処理詳細
 
-### フロー
-![描画フロー](out\graph\drawSequence.png "描画フロー")
+![描画フロー](docs\graph\out\docs\plantuml\drawSequence.png "描画フロー")
 
 1. DrawerからWorldにDrawObjectをリクエスト
 2. WorldはPolyの頂点座標をCameraに渡し、スクリーン座標変換をリクエスト
@@ -134,10 +163,31 @@ Pointインスタンスを格納する。Pointインスタンスが格納され�
 クラスには命名規則を設けているがそれ以外はまだ設計が固まっていないため規則がない。ただ関数名から意味がわかるようにはなっている。
 
 特に**index.js**。
+
+* Prefix : ***は接頭辞につける文字列を表す
+
+### HTML
+
+* id
+  * Prefix : 小文字(lower case)でなんのエレメントかを表すアクロニム(頭字語)。
+  * 以降の単語は頭文字を大文字、それ以外は小文字でつける。
+  * Prefixの次の単語はボタンなら動詞をつける。それを押すと何が起こるのかを表す動詞を適切に選ぶ。
+
+    例 id="btnUpdateCameraPath"
+
+    カメラパスの**パスの一覧更新**ボタンのid
+
+    index.html line 274
+    ~~~html
+    <sp-button id="btnUpdateCameraPath" variant="primary">
+    </sp-button>
+    ~~~
+
+### クラス
 * 変数
-    * 型を最初につける。先頭は必ず小文字。
-    * インスタンスは接頭辞大文字の**I**を使う。
-    * boolの場合は接頭辞bを使う。
+  * Prefix : 型を最初につける。先頭は必ず小文字。
+  * インスタンスは接頭辞大文字の**I**を使う。
+  * boolの場合は接頭辞bを使う。
 
 + 関数
 
@@ -153,4 +203,4 @@ Pointインスタンスを格納する。Pointインスタンスが格納され�
         #### 例
         * Matrix.multiply() 行列の掛け算(translate)を行うためmultiplyをつける。
         * Matrix.translate() 行列の平行移動(translate)を行うためtranslate
-    * インスタンスの変数を直接書き換える場合は接尾時にOverrideを使う。
+    * インスタンスのメンバ変数を直接書き換える場合は接尾時にOverrideを使う。

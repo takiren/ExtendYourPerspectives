@@ -153,9 +153,9 @@ index.htmlはプラグインのGUI部分となるインターフェースとな�
 
     Matrixを扱うことはわかっているため静的メソッドのほうがよいのではないかと考えた。
 
-# 処理解説
+## 処理解説
 
-## 描画フロー
+### 描画フロー
 
 1. **index.js** の**Init()** で初期化。現在のドキュメントを取得
 2. **Camera**インスタンスを生成
@@ -166,31 +166,29 @@ index.htmlはプラグインのGUI部分となるインターフェースとな�
 7. **World**に**Poly**インスタンスを追加
 8. 描画処理(下記参照)
 
-## 描画処理詳細
+### 描画処理詳細
 
 ![描画フロー](docs\graph\out\docs\plantuml\drawSequence.png "描画フロー")
 
 1. DrawerからWorldにDrawObjectをリクエスト
 2. World.getDrawObjectFromWorld()が呼び出される
-3. DrawObjectを生成
-   1. World.Polysの要素にアクセス。要素の型はPolyインスタンス
+   1. DrawObjectを生成
+   2. World.Polysの要素にアクセス。要素の型はPolyインスタンス
       Polyインスタンスに格納されている頂点をCameraにわたす
-   2. WorldはPolyの頂点座標をCameraに渡し、スクリーン座標変換をリクエスト
-   3. Cameraはスクリーン座標変換を行い値を返す
-   4. 戻り値(スクリーン座標)からDrawObjectElementを生成
-   5. DrawObjectにDrawObjectElementを格納
-   6. World.Polysの要素数だけ繰り返し
-   7. World.MultiPolysの要素にアクセス
-   8. 同様にDrawObjectElementを生成しDrawObjectに格納
-   9. World.MultiPolysの要素数だけ繰り返し
-4.  DrawObjectをDrawerに返す
-5.  DrawObjectからスクリーン座標を取得
-6.  Drawerがスクリーン座標にパスを生成するようPhotoshopAPIにリクエスト
-7.  Drawerがスクリーン座標にパスのストロークを描画するようリクエスト
-8.  DrawerがPhotoshopAPIに作成したパス消去するようリクエスト
+   3. WorldはPolyの頂点座標をCameraに渡し、スクリーン座標変換をリクエスト
+   4. Cameraはスクリーン座標変換を行い値を返す
+   5. 戻り値(スクリーン座標)からDrawObjectElementを生成
+   6. DrawObjectにDrawObjectElementを格納
+   7. World.Polysの要素数だけ繰り返し
+   8. World.MultiPolysの要素にアクセス
+   9. 同様にDrawObjectElementを生成しDrawObjectに格納
+   10. World.MultiPolysの要素数だけ繰り返し
+3.  DrawObjectをDrawerに返す
+4.  DrawObjectからスクリーン座標を取得
+5.  Drawerがスクリーン座標にパスを生成するようPhotoshopAPIにリクエスト
+6.  Drawerがスクリーン座標にパスのストロークを描画するようリクエスト
+7.  DrawerがPhotoshopAPIに作成したパス消去するようリクエスト
 
-
-内の要素にアクセス。
 
 ## 命名規則
 
@@ -207,11 +205,12 @@ index.htmlはプラグインのGUI部分となるインターフェースとな�
     * 以降の単語は頭文字を大文字、それ以外は小文字でつける。
     * Prefixの次の単語はボタンなら動詞をつける。それを押すと何が起こるのかを表す動詞を適切に選ぶ。
 
-    例 id="btnUpdateCameraPath"
+    例　カメラパスの**パスの一覧更新**ボタンのid
+        
+    id="btnUpdateCameraPath"
 
-    カメラパスの**パスの一覧更新**ボタンのid
 
-    index.html line 274
+    index.html
     ~~~html
     <sp-button id="btnUpdateCameraPath" variant="primary">
     </sp-button>
@@ -221,7 +220,20 @@ index.htmlはプラグインのGUI部分となるインターフェースとな�
 * 変数
     * Prefix : 型を最初につける。先頭は必ず小文字。
     * インスタンスは接頭辞大文字の**I**を使う。
-    * boolの場合は接頭辞bを使う。
+    * boolの場合は接頭辞にb。
+        
+        例 : Poly.bClosed
+
+        src/Poly.js
+        ~~~Javascript
+        class Poly{
+            constructor() {
+                ...
+                this.bClosed=false
+                ...
+            }
+        }
+        ~~~
 
 + 関数
 

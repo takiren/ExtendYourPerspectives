@@ -159,6 +159,8 @@ class World {
     return IDrawObject
   }
 
+  //パース用と普通のオブジェクト用でコレクションを分けている。
+  //わける必要があるかはわからないがわかりやすい気がしたので分けた。
   getDrawObjectPerse() {
     const IDrawObject = new DrawObject();
     for (const key in this.PersepectivePolys) {

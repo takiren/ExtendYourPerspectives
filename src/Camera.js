@@ -101,7 +101,7 @@ class Camera {
   }
 
   makeNormalize() {
-    //カメラ座標系を正規化する。
+    //カメラ座標系を正規化する変換行列。
     return Matrix.makeScale(this.w_distance / (this.zMax * this.w_hSize), this.w_distance / (this.w_vSize * this.zMax), 1 / this.zMax);
   }
 
@@ -118,7 +118,8 @@ class Camera {
   }
 
   Project(vert) {
-    //ビューポート変換
+    //透視投影を行う
+    //カメラ座標系へ変換　-> 正規化 -> 透視投影変換まで行う
     vert = Matrix.multiply(this.matrixCameraTransformer, vert);
     vert = Matrix.multiply(this.matrixNormalizer, vert);
     vert = Matrix.multiply(this.matrixProjector, vert);

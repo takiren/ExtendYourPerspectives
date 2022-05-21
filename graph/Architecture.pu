@@ -4,11 +4,7 @@ skinparam {
     padding 1
 }
 
-class Poly{
-    + Point[] verts
-    + Point origin
-    + Point[] getVertsWorld(void)
-}
+
 
 class Camera{
     + Point Postion
@@ -21,7 +17,7 @@ class World{
     + Camera ICamera
     + Poly[] Polys
     + MultiPoly[] MultiPolys
-    + Number[][x,y] getScreenLocations(Poly)
+    + DrawObject getDrawObjectElementsFromWorld()
 }
 
 class Point{
@@ -48,6 +44,9 @@ class Matrix{
     {static} -Matrix makeInverse(mx:Matrix)
     {static} -Matrix dot(vec1: Matrix(4,1), vec2: Matrix(4,1))
 }
+class Vector{}
+class Vector2{}
+class Vector3{}
 
 class Drawer{
     + Drawer(app, currentDoc, constants)
@@ -60,13 +59,23 @@ class DrawObject{
 class DrawObjectElement{
 }
 class MultiPoly{
+    + Poly[] polys
+    + Poly[] getPolys()
+}
+class Poly{
+    + Point[] verts
+    + Point origin
+    + Point[] getVertsWorld(void)
 }
 
-MultiPoly *-Poly
-World *-- MultiPoly
+Vector --|> Matrix
+Vector2 --|> Vector
+Vector3 --|> Vector
+MultiPoly *--Poly
 World *-- Camera
-World *--Poly
-Point -|> Matrix
+World *-- MultiPoly
+
+Matrix <|-- Point
 Poly *--Point
 DrawObject *-- DrawObjectElement
 DrawObjectElement <- World

@@ -28,7 +28,7 @@ CSDKはGUIの実装に時間を取られてしまう。
 ## 要求環境
 * Adobe Photoshop 23.3 or higher.
 
-    旧バージョンだとAPIが古いため動作しない。
+    旧バージョンだとAPIが古いため動作しない(おそらくロードはできるが想定した動作をしない)。
 * Adobe UXP Developer Tool
 
 ## 諸注意

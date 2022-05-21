@@ -1,0 +1,9 @@
+@startuml drawcall
+skinparam {
+    monochrome true
+    padding 1
+}
+start
+
+stop
+@enduml

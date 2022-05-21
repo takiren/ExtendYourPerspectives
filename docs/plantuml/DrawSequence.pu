@@ -1,0 +1,18 @@
+@startuml drawSequence
+skinparam {
+    monochrome true
+    padding 1
+}
+Drawer->World: getDrawObjectFromWorld()
+activate World
+loop polys.length
+    loop poly.verts.length
+    World -> Camera : ProjectToScreen
+    activate Camera
+    return Point[Screen X, Screen Y, Z, 1]
+    end
+end
+
+return DrawObject
+Drawer -> PhotoshopAPI : Stroke Path(s)
+@enduml

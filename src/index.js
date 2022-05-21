@@ -268,7 +268,7 @@ const offsetReset=()=> {
 
 const drawPrimitive=async()=> {
   //プリミティブを描画
-  await require('photoshop').core.executeAsModal(DoPrimitiveDraw, { "commandName": "Test command" });
+  await require('photoshop').core.executeAsModal(DoPrimitiveDraw, { "commandName": "Drawing Primitive" });
 }
 
 const DoPrimitiveDraw=async(executionControl)=> {
@@ -284,7 +284,7 @@ const DoPrimitiveDraw=async(executionControl)=> {
   // 'Custom Command'
   let suspensionID = await hostControl.suspendHistory({
     "documentID": documentID,
-    "name": "パース描画"
+    "name": "プリミティブ描画"
   });
 
   //ここから
@@ -346,7 +346,7 @@ const DoTransformPath=async(executionControl) =>{
 
   let suspensionID = await hostControl.suspendHistory({
     "documentID": documentID,
-    "name": "パース描画"
+    "name": "パース変形"
   })
 
   wld = createScene()
@@ -360,7 +360,7 @@ const DoTransformPath=async(executionControl) =>{
 }
 
 const drawPerspective= async()=> {
-  await require('photoshop').core.executeAsModal(DoDrawPerspective, { "commandName": "Test command" });
+  await require('photoshop').core.executeAsModal(DoDrawPerspective, { "commandName": "Drawing Perspective lines" });
 }
 
 const DoDrawPerspective=async(executionControl)=> {

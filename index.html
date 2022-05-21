@@ -240,9 +240,6 @@
           </sp-textfield>
         </div>
         <div>
-          <sp-textfield value="0.0" type="number" id="cameraRotZ">
-            <sp-label slot="label">カメラの傾き</sp-label>
-          </sp-textfield>
           <sp-textfield value="40.0" type="text" id="cameraFOV">
             <sp-label slot="label">カメラの画角(水平視野角)</sp-label>
           </sp-textfield>
@@ -303,11 +300,7 @@
         <sp-detail>パス一覧</sp-detail>
         <sp-menu id="menuTargets" slot="options" selects="multiple">
         </sp-menu>
-        <sp-detail>変形対象</sp-detail>
-        <sp-menu id="menuCandidate">
-        </sp-menu>
       </div>
-      <sp-button id="updateTargetPaths">対象の更新</sp-button>
       <sp-button id="btnTransform">変形</sp-button>
     </div>
     <div class="sp-tab-page" id="primitives-tab-page">

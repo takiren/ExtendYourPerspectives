@@ -398,12 +398,9 @@ const DoDrawPerspective=async(executionControl)=> {
 
 document.getElementById("btnGo").addEventListener("click", drawPerspective);
 document.getElementById("btnUpdateCameraPath").addEventListener("click", updateSelectionCameraPath);
-document.getElementById("updateTargetPaths").addEventListener("click", updateSelectionTargetPaths)
-document.getElementById("menuTargets").addEventListener("dblclick", addPath)
 document.getElementById("updateNormal").addEventListener("click", updateNormalPathPicker)
 document.getElementById("pickerNormalLength").addEventListener("change", updateNormalText)
 document.getElementById("btnGeneratePrimitive").addEventListener("click", drawPrimitive)
-
 document.getElementById("btnCalcCamera").addEventListener("click", calcCamera)
 document.getElementById("btnResetOffset").addEventListener("click", offsetReset)
 document.getElementById("btnTransform").addEventListener("click", transformPath)

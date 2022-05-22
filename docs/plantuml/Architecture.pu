@@ -74,7 +74,7 @@ Vector3 --|> Vector
 MultiPoly *--Poly
 World *-- Camera
 World *-- MultiPoly
-
+Camera --Matrix
 Matrix <|-- Point
 Poly *--Point
 DrawObject *-- DrawObjectElement

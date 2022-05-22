@@ -66,7 +66,9 @@ class Poly {
     }
   }
 
-  Transform(mx) {
+  transform(mx) {
+    //行列の掛け算をpolyのすべての頂点に対して行う。multiplyだとなんかピンとこなかった。
+    //結果を返す。
     const v = []
     for (const key in this.verts) {
       if (Object.hasOwnProperty.call(this.verts, key)) {
@@ -77,8 +79,9 @@ class Poly {
     return v
   }
 
-  TransformOverride(mx) {
-    //元のデータを書き換え
+  transformOverride(mx) {
+    //行列の掛け算をpolyのすべての頂点に対して行う。multiplyだとなんかピンとこなかった。
+    //変数this.vertsを書き換え
     for (const key in this.verts) {
       if (Object.hasOwnProperty.call(this.verts, key)) {
         this.verts[key] = Matrix.multiply(mx, this.verts[key])
@@ -87,7 +90,7 @@ class Poly {
   }
 
 
-  RotateYOverride(radian) {
+  rotateYOverride(radian) {
     //元のデータを書き換え
     let mx_rot = Matrix.makeRotationY(radian)
 
@@ -99,7 +102,7 @@ class Poly {
   }
 
   getVertsWorld() {
-    //ワールド座標系で取得
+    //ワールド座標系で(頂点を)取得
     const worldVerts = []
     for (const key in this.verts) {
       if (Object.hasOwnProperty.call(this.verts, key)) {
@@ -112,6 +115,7 @@ class Poly {
 
 
   static createLine(v1, v2) {
+    //2点で構成されるPolyを作る。
     const p = new Poly();
     p.addVert(v1);
     p.addVert(v2);

@@ -38,7 +38,7 @@ class PrimitivePlane extends PrimitiveBase {
         this.poly.setClosed()
         console.log("平面を作成")
 
-        this.poly.TransformOverride(this.rot)
+        this.poly.transformOverride(this.rot)
     }
 
     getPoly() {
@@ -50,6 +50,7 @@ class PrimitivePlane extends PrimitiveBase {
 }
 
 class PrimitiveBox extends PrimitiveBase {
+    //-------WIP-------
     createPoly() {
         //箱は6面だから6ループ
         const MultiPolyBox = new MultiPoly()

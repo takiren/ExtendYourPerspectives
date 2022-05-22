@@ -30,22 +30,21 @@ Array.from(document.querySelectorAll(".sp-tab")).forEach(theTab => {
 
 const app = window.require('photoshop').app;
 const constants = window.require("photoshop").constants;
-let currentDoc;
-let canvas_height;
-let canvas_width;
-let max_split;
-let z_c_min;
-let z_min;
-let z_max;
-let window_distance;
+let currentDoc; //現在のドキュメント
+let canvas_height; //キャンバス縦
+let canvas_width; //キャンバス横
+let z_c_min; //最小クリッピング距離と最大クリッピング距離の比
+let z_min; //最小クリッピング距離
+let z_max; //最大クリッピング距離
+let window_distance; //投影面までの距離
 
-let horizontal_degree;
-let horizonta_rads;
-let vertical_rads;
-let window_v_size;
-let window_h_size;
+let horizontal_degree; //水平視野角 degree
+let horizonta_rads; //水平視野角 radian
+let vertical_rads; //水平視野角 radian
+let window_v_size; //スクリーン縦サイズ
+let window_h_size; //スクリーン横サイズ
 
-let normalLength;
+let normalLength; //何pxを1mとするか。デフォルトは500px=1m
 
 const Init=()=> {
   //初期化処理
@@ -59,7 +58,6 @@ const Init=()=> {
   console.log("Document Height:", currentDoc.height);
   canvas_width = currentDoc.width;
   console.log("Documen Width:", currentDoc.width);
-  max_split = 20;
   z_c_min = 0.0;
   z_min = 0.1;
   z_max = 1000.0;
